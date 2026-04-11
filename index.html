@@ -796,18 +796,23 @@ async function pgAdmMembers(el){
   el.innerHTML=`
     <div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
     <div class="tw"><table>
-      <thead><tr><th>Nome</th><th>Time</th><th>Acesso</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
+      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
       <tbody>${members.map(m=>{
-        const rl={admin:'ADM Full',account:'Account',user:'Operador'};
-        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user'};
+        const rl={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
+        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user',executor:'rb-user',prod:'rb-user'};
+        const al=m.access_level||'user';
+        const fn=m.job_title&&!['executor','account','admin','user','prod'].includes(m.job_title)?m.job_title:'—';
         return `<tr>
           <td style="font-weight:600">${m.name}</td>
           <td><span class="badge">${m.team||'—'}</span></td>
-          <td><span class="role-badge ${rc[m.access_level]||'rb-user'}">${rl[m.access_level]||'User'}</span></td>
-          <td class="tg">${m.job_title||m.role||'—'}</td>
+          <td><span class="role-badge ${rc[al]||'rb-user'}">${rl[al]||'User'}</span></td>
+          <td class="tg">${fn}</td>
           <td class="tg">${m.capacity_hours_month||140}h</td>
           <td class="tg" style="font-size:11px">${m.email||'—'}</td>
-          <td><button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button></td>
+          <td style="white-space:nowrap">
+            <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
+            <button class="bsm" onclick="confirmDelMember('${m.id}','${m.name.replace(/'/g,\'')}')" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
+          </td>
         </tr>`;
       }).join('')}</tbody>
     </table></div>`;
@@ -1125,6 +1130,14 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
 if(window.innerWidth<=768)document.getElementById('mbtn').style.display='flex';
 window.addEventListener('resize',()=>{const b=document.getElementById('mbtn');if(b)b.style.display=window.innerWidth<=768?'flex':'none';});
 
+
+async function confirmDelMember(id, name){
+  if(!confirm('Remover ' + name + '?'))return;
+  try{
+    await req('DELETE',`tt_members?id=eq.${id}`,null,tok());
+    toast('Removido','success');await loadAll();buildNav();renderPage();
+  }catch(ex){toast('Erro: '+ex.message,'error');}
+}
 // INIT
 (async()=>{
   const sv=localStorage.getItem('tgt_sess');
