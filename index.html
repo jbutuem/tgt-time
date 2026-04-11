@@ -368,6 +368,7 @@ document.getElementById('lform').addEventListener('submit',async e=>{
   err.classList.remove('show'); btn.disabled=true; btn.textContent='Entrando...';
   try{
     sess=await authReq('POST','token?grant_type=password',{email:document.getElementById('femail').value,password:document.getElementById('fpass').value});
+    if(!sess?.access_token)throw new Error('Resposta inválida do servidor');
     localStorage.setItem('tgt_sess',JSON.stringify(sess));
     await boot();
   }catch(ex){err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');}
@@ -1139,13 +1140,33 @@ async function confirmDelMember(id, name){
   }catch(ex){toast('Erro: '+ex.message,'error');}
 }
 // INIT
+async function refreshSession(s){
+  try{
+    const r=await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':KEY},
+      body:JSON.stringify({refresh_token:s.refresh_token})
+    });
+    if(r.ok){
+      const ns=await r.json();
+      localStorage.setItem('tgt_sess',JSON.stringify(ns));
+      return ns;
+    }
+  }catch{}
+  return null;
+}
+
 (async()=>{
   const sv=localStorage.getItem('tgt_sess');
   if(sv){
     try{
       const s=JSON.parse(sv);
+      // Try current token first
       const r=await fetch(`${SB}/auth/v1/user`,{headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});
       if(r.ok){sess=s;await boot();return;}
+      // Token expired — try refresh
+      const ns=await refreshSession(s);
+      if(ns){sess=ns;await boot();return;}
     }catch{}
     localStorage.removeItem('tgt_sess');
   }
