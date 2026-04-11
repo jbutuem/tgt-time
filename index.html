@@ -367,14 +367,10 @@ document.getElementById('lform').addEventListener('submit',async e=>{
   const btn=document.getElementById('lbtn'),err=document.getElementById('aerr');
   err.classList.remove('show'); btn.disabled=true; btn.textContent='Entrando...';
   try{
-    console.log('Tentando login...');
     sess=await authReq('POST','token?grant_type=password',{email:document.getElementById('femail').value,password:document.getElementById('fpass').value});
-    console.log('Resposta auth:', sess?.access_token ? 'token OK' : 'sem token', sess);
     if(!sess?.access_token)throw new Error('Resposta inválida do servidor');
     localStorage.setItem('tgt_sess',JSON.stringify(sess));
-    console.log('Chamando boot()...');
     await boot();
-    console.log('Boot concluído');
   }catch(ex){
     console.error('Erro login:', ex);
     err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');
@@ -390,7 +386,6 @@ async function doLogout(){
 }
 
 async function boot(){
-  console.log('boot() iniciado, sess:', sess?.access_token ? 'ok' : 'nulo');
   document.getElementById('auth').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('curdate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
@@ -403,7 +398,6 @@ async function boot(){
 
 // LOAD ALL DATA
 async function loadAll(){
-  console.log('loadAll() chamado, tok:', tok() ? 'ok' : 'nulo');
   try{
     const [m,c,p]=await Promise.all([
       req('GET','tt_members?select=*&order=name',null,tok()),
@@ -411,11 +405,9 @@ async function loadAll(){
       req('GET','tt_projects?select=*&order=name',null,tok())
     ]);
     members=m||[];clients=c||[];projects=p||[];
-    console.log('loadAll dados:', members.length,'membros',clients.length,'clientes',projects.length,'projetos');
 
     // Find current user - try multiple ways
     const userEmail=sess?.user?.email||sess?.email||null;
-    console.log('userEmail:', userEmail);
     if(userEmail){
       me=members.find(m=>m.email===userEmail);
     }
@@ -425,7 +417,6 @@ async function loadAll(){
       if(uid) me=members.find(m=>m.auth_id===uid);
     }
     if(!me&&members.length>0) me=members[0];
-    console.log('me:', me?.name, me?.access_level);
 
     // Load account associations if account role
     if(me && me.access_level==='account'){
