@@ -836,7 +836,7 @@ async function pgAdmMembers(el){
           <td class="tg" style="font-size:11px">${m.email||'—'}</td>
           <td style="white-space:nowrap">
             <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
-            <button class="bsm" onclick="confirmDelMember('${m.id}','${m.name.replace(/'/g,\'')}')" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
+            <button class="bsm" onclick="confirmDelMember(this)" data-id="${m.id}" data-name="${m.name.replace(/"/g,'')}" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
           </td>
         </tr>`;
       }).join('')}</tbody>
@@ -1156,7 +1156,8 @@ if(window.innerWidth<=768)document.getElementById('mbtn').style.display='flex';
 window.addEventListener('resize',()=>{const b=document.getElementById('mbtn');if(b)b.style.display=window.innerWidth<=768?'flex':'none';});
 
 
-async function confirmDelMember(id, name){
+async function confirmDelMember(btn){
+  const id=btn.dataset.id, name=btn.dataset.name;
   if(!confirm('Remover ' + name + '?'))return;
   try{
     await req('DELETE',`tt_members?id=eq.${id}`,null,tok());
