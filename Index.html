@@ -267,7 +267,7 @@ tbody td{padding:11px 16px;font-size:13px}
       </div>
       <div class="frow">
         <div class="fld"><label class="lbl">Time</label>
-          <select class="inp" id="mb-team"><option value="T1">T1</option><option value="T3">T3</option><option value="T4">T4</option><option value="Pack">Pack</option><option value="PROD">PROD</option><option value="ADM">ADM</option></select>
+          <select class="inp" id="mb-team"><option value="T1">T1</option><option value="T3">T3</option><option value="T4">T4</option><option value="PACK">Pack</option><option value="PROD">PROD</option><option value="ADM">ADM</option></select>
         </div>
         <div class="fld"><label class="lbl">Nível de Acesso</label>
           <select class="inp" id="mb-access"><option value="user">Operador / User</option><option value="account">Account</option><option value="admin">ADM Full</option></select>
@@ -367,10 +367,18 @@ document.getElementById('lform').addEventListener('submit',async e=>{
   const btn=document.getElementById('lbtn'),err=document.getElementById('aerr');
   err.classList.remove('show'); btn.disabled=true; btn.textContent='Entrando...';
   try{
+    console.log('Tentando login...');
     sess=await authReq('POST','token?grant_type=password',{email:document.getElementById('femail').value,password:document.getElementById('fpass').value});
+    console.log('Resposta auth:', sess?.access_token ? 'token OK' : 'sem token', sess);
+    if(!sess?.access_token)throw new Error('Resposta inválida do servidor');
     localStorage.setItem('tgt_sess',JSON.stringify(sess));
+    console.log('Chamando boot()...');
     await boot();
-  }catch(ex){err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');}
+    console.log('Boot concluído');
+  }catch(ex){
+    console.error('Erro login:', ex);
+    err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');
+  }
   finally{btn.disabled=false;btn.textContent='Entrar';}
 });
 
@@ -382,6 +390,7 @@ async function doLogout(){
 }
 
 async function boot(){
+  console.log('boot() iniciado, sess:', sess?.access_token ? 'ok' : 'nulo');
   document.getElementById('auth').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('curdate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
@@ -394,17 +403,29 @@ async function boot(){
 
 // LOAD ALL DATA
 async function loadAll(){
+  console.log('loadAll() chamado, tok:', tok() ? 'ok' : 'nulo');
   try{
-    [members,clients,projects]=await Promise.all([
+    const [m,c,p]=await Promise.all([
       req('GET','tt_members?select=*&order=name',null,tok()),
       req('GET','tt_clients?select=*&order=name',null,tok()),
-      req('GET','tt_projects?select=*,client:tt_clients(id,name)&order=name',null,tok())
+      req('GET','tt_projects?select=*&order=name',null,tok())
     ]);
+    members=m||[];clients=c||[];projects=p||[];
+    console.log('loadAll dados:', members.length,'membros',clients.length,'clientes',projects.length,'projetos');
 
-    // Find current user
-    if(sess?.user?.email){
-      me=members.find(m=>m.email===sess.user.email)||members[0];
+    // Find current user - try multiple ways
+    const userEmail=sess?.user?.email||sess?.email||null;
+    console.log('userEmail:', userEmail);
+    if(userEmail){
+      me=members.find(m=>m.email===userEmail);
     }
+    if(!me&&members.length>0){
+      // fallback: find by auth_id
+      const uid=sess?.user?.id||sess?.id;
+      if(uid) me=members.find(m=>m.auth_id===uid);
+    }
+    if(!me&&members.length>0) me=members[0];
+    console.log('me:', me?.name, me?.access_level);
 
     // Load account associations if account role
     if(me && me.access_level==='account'){
@@ -423,7 +444,10 @@ async function loadAll(){
       const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
       document.getElementById('urole').textContent=`${me.team||''} · ${roleLabels[me.access_level]||'User'}`;
     }
-  }catch(ex){console.error('loadAll error:',ex);}
+  }catch(ex){
+    console.error('loadAll error:',ex);
+    toast('Erro ao carregar dados: '+ex.message,'error');
+  }
 }
 
 // FILTERED DATA for current user
@@ -438,7 +462,8 @@ function myMembers(){
   return me?[me]:[];
 }
 function myProjects(clientId){
-  return projects.filter(p=>!clientId||p.client_id===clientId);
+  if(!clientId)return projects;
+  return projects.filter(p=>p.client_id===clientId);
 }
 
 // NAV
@@ -796,18 +821,23 @@ async function pgAdmMembers(el){
   el.innerHTML=`
     <div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
     <div class="tw"><table>
-      <thead><tr><th>Nome</th><th>Time</th><th>Acesso</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
+      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
       <tbody>${members.map(m=>{
-        const rl={admin:'ADM Full',account:'Account',user:'Operador'};
-        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user'};
+        const rl={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
+        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user',executor:'rb-user',prod:'rb-user'};
+        const al=m.access_level||'user';
+        const fn=m.job_title&&!['executor','account','admin','user','prod'].includes(m.job_title)?m.job_title:'—';
         return `<tr>
           <td style="font-weight:600">${m.name}</td>
           <td><span class="badge">${m.team||'—'}</span></td>
-          <td><span class="role-badge ${rc[m.access_level]||'rb-user'}">${rl[m.access_level]||'User'}</span></td>
-          <td class="tg">${m.job_title||m.role||'—'}</td>
+          <td><span class="role-badge ${rc[al]||'rb-user'}">${rl[al]||'User'}</span></td>
+          <td class="tg">${fn}</td>
           <td class="tg">${m.capacity_hours_month||140}h</td>
           <td class="tg" style="font-size:11px">${m.email||'—'}</td>
-          <td><button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button></td>
+          <td style="white-space:nowrap">
+            <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
+            <button class="bsm" onclick="confirmDelMember('${m.id}','${m.name.replace(/'/g,\'')}')" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
+          </td>
         </tr>`;
       }).join('')}</tbody>
     </table></div>`;
@@ -1023,20 +1053,28 @@ function editMember(id){
   document.getElementById('mb-name').value=m.name||'';
   document.getElementById('mb-email').value=m.email||'';
   document.getElementById('mb-role-inp').value=m.job_title||m.role||'';
-  document.getElementById('mb-team').value=m.team||'T1';
+  document.getElementById('mb-team').value=(m.team==='Pack'?'PACK':m.team)||'T1';
   document.getElementById('mb-access').value=m.access_level||'user';
   document.getElementById('mb-cap').value=m.capacity_hours_month||140;
   document.getElementById('mb-pass').value='';
   openM('m-member');
 }
 async function saveMember(){
-  const p={name:document.getElementById('mb-name').value.trim(),email:document.getElementById('mb-email').value.trim(),job_title:document.getElementById('mb-role-inp').value.trim(),team:document.getElementById('mb-team').value,access_level:document.getElementById('mb-access').value,capacity_hours_month:parseInt(document.getElementById('mb-cap').value)||140};
-  if(!p.name){toast('Nome obrigatório','error');return;}
+  const name=document.getElementById('mb-name').value.trim();
+  const email=document.getElementById('mb-email').value.trim();
+  const job_title=document.getElementById('mb-role-inp').value.trim();
+  const team=document.getElementById('mb-team').value;
+  const access_level=document.getElementById('mb-access').value;
+  const capacity_hours_month=parseInt(document.getElementById('mb-cap').value)||140;
+  if(!name){toast('Nome obrigatório','error');return;}
   const btn=document.getElementById('mb-save');btn.disabled=true;btn.textContent='Salvando...';
   try{
     if(editMemberId){
+      // On edit: update all fields except email
+      const p={name,job_title,team,access_level,capacity_hours_month};
       await req('PATCH',`tt_members?id=eq.${editMemberId}`,p,tok());
     }else{
+      const p={name,email,job_title,team,access_level,capacity_hours_month};
       await req('POST','tt_members',p,tok());
     }
     toast(editMemberId?'Atualizado':'Adicionado','success');closeM('m-member');await loadAll();buildNav();renderPage();
@@ -1117,14 +1155,42 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
 if(window.innerWidth<=768)document.getElementById('mbtn').style.display='flex';
 window.addEventListener('resize',()=>{const b=document.getElementById('mbtn');if(b)b.style.display=window.innerWidth<=768?'flex':'none';});
 
+
+async function confirmDelMember(id, name){
+  if(!confirm('Remover ' + name + '?'))return;
+  try{
+    await req('DELETE',`tt_members?id=eq.${id}`,null,tok());
+    toast('Removido','success');await loadAll();buildNav();renderPage();
+  }catch(ex){toast('Erro: '+ex.message,'error');}
+}
 // INIT
+async function refreshSession(s){
+  try{
+    const r=await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':KEY},
+      body:JSON.stringify({refresh_token:s.refresh_token})
+    });
+    if(r.ok){
+      const ns=await r.json();
+      localStorage.setItem('tgt_sess',JSON.stringify(ns));
+      return ns;
+    }
+  }catch{}
+  return null;
+}
+
 (async()=>{
   const sv=localStorage.getItem('tgt_sess');
   if(sv){
     try{
       const s=JSON.parse(sv);
+      // Try current token first
       const r=await fetch(`${SB}/auth/v1/user`,{headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});
       if(r.ok){sess=s;await boot();return;}
+      // Token expired — try refresh
+      const ns=await refreshSession(s);
+      if(ns){sess=ns;await boot();return;}
     }catch{}
     localStorage.removeItem('tgt_sess');
   }
