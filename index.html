@@ -405,16 +405,27 @@ async function boot(){
 async function loadAll(){
   console.log('loadAll() chamado, tok:', tok() ? 'ok' : 'nulo');
   try{
-    [members,clients,projects]=await Promise.all([
+    const [m,c,p]=await Promise.all([
       req('GET','tt_members?select=*&order=name',null,tok()),
       req('GET','tt_clients?select=*&order=name',null,tok()),
-      req('GET','tt_projects?select=*,client:tt_clients(id,name)&order=name',null,tok())
+      req('GET','tt_projects?select=*&order=name',null,tok())
     ]);
+    members=m||[];clients=c||[];projects=p||[];
+    console.log('loadAll dados:', members.length,'membros',clients.length,'clientes',projects.length,'projetos');
 
-    // Find current user
-    if(sess?.user?.email){
-      me=members.find(m=>m.email===sess.user.email)||members[0];
+    // Find current user - try multiple ways
+    const userEmail=sess?.user?.email||sess?.email||null;
+    console.log('userEmail:', userEmail);
+    if(userEmail){
+      me=members.find(m=>m.email===userEmail);
     }
+    if(!me&&members.length>0){
+      // fallback: find by auth_id
+      const uid=sess?.user?.id||sess?.id;
+      if(uid) me=members.find(m=>m.auth_id===uid);
+    }
+    if(!me&&members.length>0) me=members[0];
+    console.log('me:', me?.name, me?.access_level);
 
     // Load account associations if account role
     if(me && me.access_level==='account'){
@@ -433,7 +444,10 @@ async function loadAll(){
       const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
       document.getElementById('urole').textContent=`${me.team||''} · ${roleLabels[me.access_level]||'User'}`;
     }
-  }catch(ex){console.error('loadAll error:',ex);}
+  }catch(ex){
+    console.error('loadAll error:',ex);
+    toast('Erro ao carregar dados: '+ex.message,'error');
+  }
 }
 
 // FILTERED DATA for current user
@@ -448,7 +462,8 @@ function myMembers(){
   return me?[me]:[];
 }
 function myProjects(clientId){
-  return projects.filter(p=>!clientId||p.client_id===clientId);
+  if(!clientId)return projects;
+  return projects.filter(p=>p.client_id===clientId);
 }
 
 // NAV
