@@ -197,12 +197,12 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
 <script>
 // ═══════════════════════════════════════
-// TGT TIME v5 — CEO Dashboard Edition
+// TGT TIME v7 — CEO Dashboard Edition
 // ═══════════════════════════════════════
 const SB='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcWl2dXp2eXZ2dmFqb2t1dHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTg0ODIsImV4cCI6MjA5MDQ3NDQ4Mn0.7mH_9ikNMnM2zfUFQrb1ot6t47plzib6No2GPT0gfa0';
 const SU='https://opqivuzvyvvvajokutvc.supabase.co';
-const CATS=['Design','Social Media','Edição','Captação','Reunião','Estratégia','Performance','Embalagem','ADM'];
-const CC={'Design':'#3b82f6','Social Media':'#a855f7','Edição':'#f59e0b','Captação':'#06b6d4','Reunião':'#ef4444','Estratégia':'#10b981','Performance':'#f97316','Embalagem':'#ec4899','ADM':'#6b7280'};
+const ACTIONS=['Análise Estratégica','Reunião','Digital Comm','Design Gráfico','Webdesign','Apresentação','Embalagem','Branding','Campanha/Tráfego','Produção AV','Evento','Brand Review','ADM'];
+const AC={'Análise Estratégica':'#10b981','Reunião':'#ef4444','Digital Comm':'#a855f7','Design Gráfico':'#3b82f6','Webdesign':'#06b6d4','Apresentação':'#f59e0b','Embalagem':'#ec4899','Branding':'#784bd1','Campanha/Tráfego':'#f97316','Produção AV':'#0ea5e9','Evento':'#eab308','Brand Review':'#6366f1','ADM':'#6b7280'};
 const TC={T1:'var(--t1)',T3:'var(--t3)',T4:'var(--t4)',PACK:'var(--pack)',PROD:'var(--prod)',ADM:'var(--adm)'};
 const TB=t=>`<span class="bg bg-${(t||'').toLowerCase()}">${t||'—'}</span>`;
 
@@ -213,7 +213,7 @@ let S={
   timerRunning:false,timerEntry:null,timerInterval:null,
   // Filters
   dateRange:'month',dateFrom:'',dateTo:'',
-  fMember:'',fClient:'',fTeam:'',fCat:'',
+  fMember:'',fClient:'',fTeam:'',fAction:'',
   currentMember:null
 };
 
@@ -283,7 +283,10 @@ function cn(id){return S.clients.find(c=>c.id===id)?.name||'—'}
 function mt(id){return S.members.find(m=>m.id===id)?.team||''}
 function gm(id){return S.members.find(m=>m.id===id)}
 function isA(){return S.currentMember?.access_level==='admin'}
+function isAccount(){return S.currentMember?.access_level==='account'}
 function isClient(){return S.currentMember?.access_level==='client'}
+function myTeam(){return S.currentMember?.team}
+function myClients(){return S.clients.filter(c=>c.team===myTeam())}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
 function toggleClientField(){const v=document.getElementById('mL').value;const w=document.getElementById('clientFieldWrap');if(w)w.style.display=v==='client'?'block':'none'}
 function toggleMenu(fc){
@@ -298,9 +301,10 @@ function filterEntries(entries){
   if(S.fMember)f=f.filter(e=>e.member_id===S.fMember);
   if(S.fClient)f=f.filter(e=>e.client_id===S.fClient);
   if(S.fTeam)f=f.filter(e=>mt(e.member_id)===S.fTeam);
-  if(S.fCat)f=f.filter(e=>e.task_category===S.fCat);
+  if(S.fAction)f=f.filter(e=>e.action===S.fAction);
   if(!isA()){
     if(isClient()) f=f.filter(e=>e.client_id===S.currentMember.client_id);
+    else if(isAccount()) f=f.filter(e=>{const m=gm(e.member_id);return m&&m.team===myTeam()});
     else f=f.filter(e=>e.member_id===S.currentMember.id);
   }
   return f;
@@ -331,14 +335,31 @@ const I={
 function render(){
   if(!S.user)return renderLogin();
   const a=document.getElementById('app');
-  const pages=[
-    ...(isClient()?[]:[['timer','Timer',I.timer,'op']]),
-    ...(isClient()?[]:[['entries','Lançamentos',I.list,'op']]),
-    ...(isClient()?[]:[['dash_me','Meu Painel',I.chart,'dash']]),
-    ...(isClient()?[['dash_myclient','Meu Consumo',I.chart,'dash']]:[['dash_client','Por Cliente',I.brief,'dash']]),
-    ...(isA()?[['dash_team','Por Time',I.dash,'dash'],['dash_people','Por Pessoa',I.users,'dash'],['dash_fin','Financeiro',I.dollar,'dash']]:[]),
-    ...(isA()?[['adm_members','Pessoas',I.users,'adm'],['adm_clients','Clientes',I.brief,'adm']]:[]),
-  ];
+  let pages=[];
+  if(isClient()){
+    // CLIENT: only their dashboard
+    pages=[['dash_myclient','Meu Consumo',I.chart,'dash']];
+  } else if(isA()){
+    // ADMIN: everything
+    pages=[
+      ['timer','Timer',I.timer,'op'],['entries','Lançamentos',I.list,'op'],
+      ['dash_me','Meu Painel',I.chart,'dash'],['dash_client','Por Cliente',I.brief,'dash'],
+      ['dash_team','Por Time',I.dash,'dash'],['dash_people','Por Pessoa',I.users,'dash'],['dash_fin','Financeiro',I.dollar,'dash'],
+      ['adm_members','Pessoas',I.users,'adm'],['adm_clients','Clientes',I.brief,'adm'],
+    ];
+  } else if(isAccount()){
+    // ACCOUNT: timer + team entries + my panel + my clients
+    pages=[
+      ['timer','Timer',I.timer,'op'],['entries','Lançamentos',I.list,'op'],
+      ['dash_me','Meu Painel',I.chart,'dash'],['dash_client','Meus Clientes',I.brief,'dash'],
+    ];
+  } else {
+    // USER: timer + my entries + my panel
+    pages=[
+      ['timer','Timer',I.timer,'op'],['entries','Meus Lançamentos',I.list,'op'],
+      ['dash_me','Meu Painel',I.chart,'dash'],
+    ];
+  }
   let nav='';let sec='';
   pages.forEach(([k,l,ic,s])=>{
     const secs={op:'Operação',dash:'Dashboards',adm:'Admin'};
@@ -405,9 +426,9 @@ function entityFilters(opts={}){
       <option value="">Todos os clientes</option>
       ${S.clients.map(c=>`<option value="${c.id}" ${S.fClient===c.id?'selected':''}>${c.name}</option>`).join('')}
     </select>`:''}
-    ${showCat?`<select class="fc" onchange="S.fCat=this.value;renderPage()" style="width:auto;min-width:120px">
-      <option value="">Todas categorias</option>
-      ${CATS.map(c=>`<option value="${c}" ${S.fCat===c?'selected':''}>${c}</option>`).join('')}
+    ${showCat?`<select class="fc" onchange="S.fAction=this.value;renderPage()" style="width:auto;min-width:120px">
+      <option value="">Todas as ações</option>
+      ${ACTIONS.map(c=>`<option value="${c}" ${S.fAction===c?'selected':''}>${c}</option>`).join('')}
     </select>`:''}
   </div>`;
 }
@@ -444,7 +465,7 @@ async function pgTimer(el){
     <div style="max-width:560px;margin:0 auto">
       <div class="card" style="text-align:center;padding:32px 16px">
         <div class="timer-display ${S.timerRunning?'timer-on':''}" id="td">${S.timerRunning?'<span class="timer-dot"></span>':''}${fT(elapsed)}</div>
-        ${S.timerRunning?`<div style="margin-bottom:14px;font-size:12px;color:var(--txt2)">${cn(S.timerEntry.client_id)} ${S.timerEntry.task_category?'· '+S.timerEntry.task_category:''} ${S.timerEntry.description?'· '+S.timerEntry.description:''}</div>`:''}
+        ${S.timerRunning?`<div style="margin-bottom:14px;font-size:12px;color:var(--txt2)">${cn(S.timerEntry.client_id)} ${S.timerEntry.project?'· '+S.timerEntry.project:''} ${S.timerEntry.action?'· '+S.timerEntry.action:''} ${S.timerEntry.description?'· '+S.timerEntry.description:''}</div>`:''}
         <div style="display:flex;justify-content:center;gap:12px">
           ${S.timerRunning?`<button class="timer-btn timer-no" onclick="stopTimer()">${I.stop}</button>`:`<button class="timer-btn timer-go" onclick="showStartModal()">${I.play}</button>`}
         </div>
@@ -452,9 +473,10 @@ async function pgTimer(el){
       <div style="margin-top:20px">
         <div class="sh"><h2>Lançamento rápido</h2></div>
         <div class="card" style="padding:16px">
+          ${isA()?`<div class="fg"><label>Pessoa</label><select class="fc" id="qMb"><option value="${S.currentMember.id}">Eu (${S.currentMember.name.split(' ')[0]})</option>${S.members.filter(m=>m.id!==S.currentMember.id).map(m=>`<option value="${m.id}">${m.name.split(' ').slice(0,2).join(' ')} · ${m.team}</option>`).join('')}</select></div>`:''}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="fg"><label>Cliente</label><select class="fc" id="qCl"><option value="">Selecione</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
-            <div class="fg"><label>Categoria</label><select class="fc" id="qCa"><option value="">Selecione</option>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+            <div class="fg"><label>Cliente</label><select class="fc" id="qCl"><option value="">Selecione</option>${(isA()?S.clients:myClients()).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+            <div class="fg"><label>Categoria</label><select class="fc" id="qCa"><option value="">Selecione</option>${ACTIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px">
             <div class="fg"><label>Data</label><input type="date" class="fc" id="qDt" value="${today()}"></div>
@@ -478,8 +500,9 @@ function showStartModal(){
   const m=document.getElementById('modal');
   m.innerHTML=`<div class="mo-c">
     <h3>Iniciar Timer</h3>
-    <div class="fg"><label>Cliente</label><select class="fc" id="tmCl"><option value="">Selecione</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
-    <div class="fg"><label>Categoria</label><select class="fc" id="tmCa"><option value="">Selecione</option>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="fg"><label>Cliente</label><select class="fc" id="tmCl"><option value="">Selecione</option>${(isA()?S.clients:myClients()).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+    <div class="fg"><label>Categoria</label><select class="fc" id="tmCa"><option value="">Selecione</option>${ACTIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="fg"><label>Projeto / Setor</label><input class="fc" id="tmPr" placeholder="Ex: External Comm, RH..."></div>
     <div class="fg"><label>Descrição</label><input class="fc" id="tmDs" placeholder="O que você está fazendo?"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">Cancelar</button><button class="btn btn-r" onclick="startTimer()">Iniciar</button></div>
   </div>`;m.classList.add('show');
@@ -490,7 +513,8 @@ async function startTimer(){
   if(!cl){toast('Selecione um cliente','e');return}
   try{
     const r=await loadRunning();for(const x of r.filter(e=>e.member_id===S.currentMember.id))await api('PATCH',`tt_time_entries?id=eq.${x.id}`,{is_running:false,ended_at:new Date().toISOString()});
-    const e=await api('POST','tt_time_entries',{member_id:S.currentMember.id,client_id:cl,task_category:ca||null,description:ds||null,started_at:new Date().toISOString(),is_running:true,is_manual:false});
+    const pr=document.getElementById('tmPr')?.value||null;
+    const e=await api('POST','tt_time_entries',{member_id:S.currentMember.id,client_id:cl,action:ca||null,project:pr,description:ds||null,started_at:new Date().toISOString(),is_running:true,is_manual:false});
     S.timerRunning=true;S.timerEntry=e[0];closeModal();renderPage();toast('Timer iniciado','s');
   }catch(e){toast('Erro: '+e.message,'e')}
 }
@@ -509,7 +533,9 @@ async function quickEntry(){
   if(!cl||!dt||!hr||hr<=0){toast('Preencha cliente, data e horas','e');return}
   try{
     const sa=`${dt}T09:00:00`,mins=Math.round(hr*60);
-    await api('POST','tt_time_entries',{member_id:S.currentMember.id,client_id:cl,task_category:ca||null,description:ds||null,started_at:sa,ended_at:new Date(new Date(sa).getTime()+mins*60000).toISOString(),duration_minutes:mins,hours:hr,date:dt,is_running:false,is_manual:true});
+    const mbId=document.getElementById('qMb')?.value||S.currentMember.id;
+        const pr=document.getElementById('qPr')?.value||null;
+    await api('POST','tt_time_entries',{member_id:mbId,client_id:cl,action:ca||null,project:pr,description:ds||null,started_at:sa,ended_at:new Date(new Date(sa).getTime()+mins*60000).toISOString(),duration_minutes:mins,hours:hr,date:dt,is_running:false,is_manual:true});
     toast(`${hr}h lançadas`,'s');document.getElementById('qHr').value='';document.getElementById('qDs').value='';
   }catch(e){toast('Erro: '+e.message,'e')}
 }
@@ -527,17 +553,18 @@ function pgEntries(el){
       <div class="card card-g"><div class="cl">Média/dia útil</div><div class="cv">${fH(tot/20)}</div></div>
     </div>
     <div class="tbl"><div class="tbl-h"><h3>Lançamentos</h3><button class="btn btn-s btn-sm" onclick="exportCSV()">${I.dl} CSV</button></div>
-    <div class="tbl-r"><table><thead><tr><th>Data</th>${isA()?'<th>Pessoa</th>':''}<th>Cliente</th><th>Categoria</th><th>Descrição</th><th style="text-align:right">Horas</th><th></th></tr></thead>
+    <div class="tbl-r"><table><thead><tr><th>Data</th>${(isA()||isAccount())?'<th>Pessoa</th>':''}<th>Cliente</th><th>Categoria</th><th>Descrição</th><th style="text-align:right">Horas</th><th></th></tr></thead>
     <tbody>${f.slice(0,200).map(e=>`<tr>
       <td>${(e.date||e.started_at?.substring(0,10)||'—')}</td>
       ${isA()?`<td style="white-space:nowrap">${mn(e.member_id).split(' ').slice(0,2).join(' ')}</td>`:''}
       <td>${cn(e.client_id)}</td>
-      <td>${e.task_category?`<span style="color:${CC[e.task_category]||'#999'}">${e.task_category}</span>`:'—'}</td>
+      <td style="color:var(--txt2);font-size:11px">${e.project||'—'}</td>
+      <td>${e.action?`<span style="color:${AC[e.action]||'#999'}">${e.action}</span>`:'—'}</td>
       <td style="color:var(--txt2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
       <td style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums">${fH(e.hours||e.duration_minutes/60||0)}</td>
       <td><button class="btn-i" onclick="delEntry('${e.id}')">${I.trash}</button></td>
     </tr>`).join('')}
-    ${f.length===0?`<tr><td colspan="7" class="empty">Nenhum lançamento</td></tr>`:''}
+    ${f.length===0?`<tr><td colspan="8" class="empty">Nenhum lançamento</td></tr>`:''}
     </tbody></table></div></div>`;
 }
 
@@ -545,8 +572,8 @@ async function delEntry(id){if(!confirm('Excluir?'))return;try{await api('DELETE
 
 function exportCSV(){
   const f=filterEntries(S.entries);
-  const rows=[['Data','Pessoa','Time','Cliente','Categoria','Descrição','Horas']];
-  f.forEach(e=>rows.push([(e.date||e.started_at?.substring(0,10)||''),mn(e.member_id),mt(e.member_id),cn(e.client_id),e.task_category||'',e.description||'',(e.hours||e.duration_minutes/60||0).toFixed(2)]));
+  const rows=[['Data','Pessoa','Time','Cliente','Projeto','Ação','Descrição','Horas']];
+  f.forEach(e=>rows.push([(e.date||e.started_at?.substring(0,10)||''),mn(e.member_id),mt(e.member_id),cn(e.client_id),e.project||'',e.action||'',e.description||'',(e.hours||e.duration_minutes/60||0).toFixed(2)]));
   const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`tgt-time-export.csv`;a.click();
 }
@@ -561,8 +588,11 @@ function pgDashMe(el){
   
   const byClient={};my.forEach(e=>{const c=cn(e.client_id);byClient[c]=(byClient[c]||0)+(e.hours||e.duration_minutes/60||0)});
   const sc=Object.entries(byClient).sort((a,b)=>b[1]-a[1]);const mx=sc[0]?.[1]||1;
-  const byCat={};my.forEach(e=>{const c=e.task_category||'Sem categoria';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
+  const byCat={};my.forEach(e=>{const c=e.action||'Sem ação';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
   const sca=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);const mxc=sca[0]?.[1]||1;
+  
+  const byProj={};my.forEach(e=>{const p=e.project||'Sem projeto';byProj[p]=(byProj[p]||0)+(e.hours||e.duration_minutes/60||0)});
+  const spj=Object.entries(byProj).sort((a,b)=>b[1]-a[1]);
 
   el.innerHTML=`
     ${dateFilterBar()}
@@ -573,15 +603,16 @@ function pgDashMe(el){
     </div>
     <div class="grid-2">
       <div class="tbl"><div class="tbl-h"><h3>Por Cliente</h3></div><div style="padding:12px">${sc.map(([n,h])=>`<div class="cb"><div class="cb-l">${n}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mx)*100}%;background:var(--red)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sc.length===0?'<div class="empty">Sem dados</div>':''}</div></div>
-      <div class="tbl"><div class="tbl-h"><h3>Por Categoria</h3></div><div style="padding:12px">${sca.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxc)*100}%;background:${CC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sca.length===0?'<div class="empty">Sem dados</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Por Ação</h3></div><div style="padding:12px">${sca.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxc)*100}%;background:${AC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sca.length===0?'<div class="empty">Sem dados</div>':''}</div></div>
     </div>`;
 }
 
 // ─── DASH: CLIENT ───
 function pgDashClient(el){
   const f=filterEntries(S.entries);
+  const relevantClients=isA()?S.clients:S.clients.filter(c=>c.team===myTeam());
   const cd={};
-  S.clients.forEach(c=>{cd[c.id]={name:c.name,team:c.team,target:parseFloat(c.target_hours_month)||parseFloat(c.target_hours)||0,fee:parseFloat(c.fee_monthly)||0,hours:0}});
+  relevantClients.forEach(c=>{cd[c.id]={name:c.name,team:c.team,target:parseFloat(c.target_hours_month)||parseFloat(c.target_hours)||0,fee:parseFloat(c.fee_monthly)||0,hours:0}});
   f.forEach(e=>{if(cd[e.client_id])cd[e.client_id].hours+=(e.hours||e.duration_minutes/60||0)});
   const cls=Object.values(cd).filter(c=>c.hours>0||c.target>0).sort((a,b)=>b.hours-a.hours);
 
@@ -611,11 +642,14 @@ function pgDashMyClient(el){
   const fee=parseFloat(client.fee_monthly)||0;
   
   // By category
-  const byCat={};f.forEach(e=>{const c=e.task_category||'Sem categoria';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
+  const byCat={};f.forEach(e=>{const c=e.action||'Sem ação';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
   const sc=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);const mx=sc[0]?.[1]||1;
   
+  const byProj={};f.forEach(e=>{const p=e.project||'Sem projeto';byProj[p]=(byProj[p]||0)+(e.hours||e.duration_minutes/60||0)});
+  const sp=Object.entries(byProj).sort((a,b)=>b[1]-a[1]);const mxp=sp[0]?.[1]||1;
+  
   // By member (who worked)
-  const byMem={};f.forEach(e=>{const n=mn(e.member_id).split(' ').slice(0,2).join(' ');byMem[n]=(byMem[n]||0)+(e.hours||e.duration_minutes/60||0)});
+  const byMem={};f.forEach(e=>{const m=gm(e.member_id);const n=m?(m.job_title||m.team||'Equipe'):'Equipe';byMem[n]=(byMem[n]||0)+(e.hours||e.duration_minutes/60||0)});
   const sm=Object.entries(byMem).sort((a,b)=>b[1]-a[1]);const mxm=sm[0]?.[1]||1;
 
   el.innerHTML=`
@@ -630,14 +664,15 @@ function pgDashMyClient(el){
       <div class="card"><div class="cl">Saldo</div><div class="cv" style="color:${target-tot>=0?'var(--prod)':'var(--red)'}">${target>0?fH(target-tot):'—'}</div><div class="cs">${target>0?(target-tot>=0?'disponível':'excedido'):'sem meta'}</div></div>
     </div>
     <div class="grid-2">
-      <div class="tbl"><div class="tbl-h"><h3>Horas por Categoria</h3></div><div style="padding:12px">${sc.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mx)*100}%;background:${CC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sc.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
-      <div class="tbl"><div class="tbl-h"><h3>Equipe alocada</h3></div><div style="padding:12px">${sm.map(([n,h])=>`<div class="cb"><div class="cb-l">${n}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxm)*100}%;background:var(--red)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sm.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Horas por Categoria</h3></div><div style="padding:12px">${sc.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mx)*100}%;background:${AC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sc.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Horas por Projeto</h3></div><div style="padding:12px">${sp.map(([p,h])=>`<div class="cb"><div class="cb-l">${p}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxp)*100}%;background:var(--t4)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sp.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Distribuição por função</h3></div><div style="padding:12px">${sm.map(([n,h])=>`<div class="cb"><div class="cb-l">${n}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxm)*100}%;background:var(--red)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sm.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
     </div>
     <div class="tbl" style="margin-top:16px"><div class="tbl-h"><h3>Últimas atividades</h3></div>
     <div class="tbl-r"><table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th style="text-align:right">Horas</th></tr></thead>
     <tbody>${f.slice(0,50).map(e=>`<tr>
       <td>${(e.date||e.started_at?.substring(0,10)||'—')}</td>
-      <td>${e.task_category?`<span style="color:${CC[e.task_category]||'#999'}">${e.task_category}</span>`:'—'}</td>
+      <td>${e.action?`<span style="color:${AC[e.action]||'#999'}">${e.action}</span>`:'—'}</td>
       <td style="color:var(--txt2)">${e.description||'—'}</td>
       <td style="text-align:right;font-weight:700">${fH(e.hours||e.duration_minutes/60||0)}</td>
     </tr>`).join('')}
@@ -781,7 +816,7 @@ function showMemberModal(id){
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="fg"><label>E-mail</label><input class="fc" id="mE" value="${m.email||''}"></div>
-      <div class="fg"><label>Senha</label><input class="fc" id="mP" value="${m.login_password||'TGTtime2026'}"></div>
+      <div class="fg"><label>Senha</label><input type="password" class="fc" id="mP" value="${m.login_password||'TGTtime2026'}" placeholder="••••••••"></div>
     </div>
     <div class="fg"><label>Monday User ID</label><input class="fc" id="mM" value="${m.monday_user_id||''}"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
@@ -879,7 +914,7 @@ async function doLogin(){
 function doLogout(){
   if(S.timerInterval)clearInterval(S.timerInterval);
   S.user=null;S.currentMember=null;S.timerRunning=false;S.timerEntry=null;
-  S.fMember='';S.fClient='';S.fTeam='';S.fCat='';S.dateRange='month';
+  S.fMember='';S.fClient='';S.fTeam='';S.fAction='';S.dateRange='month';
   render();
 }
 
