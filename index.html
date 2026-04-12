@@ -598,9 +598,6 @@ function pgDashClient(el){
     </tbody></table></div></div>`;
 }
 
-// ─── DASH: TEAM ───
-function pgDashTeam(el){
-
 // ─── DASH: MY CLIENT (for client role) ───
 function pgDashMyClient(el){
   const cid=S.currentMember?.client_id;
@@ -648,7 +645,7 @@ function pgDashMyClient(el){
     </tbody></table></div></div>`;
 }
 
-// ─── DASH: TEAM (original continues) ───
+// ─── DASH: TEAM ───
 function pgDashTeam(el){
   if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
   const f=filterEntries(S.entries);
