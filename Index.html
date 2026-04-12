@@ -2,1200 +2,832 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>TGT Time</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23231F20'/%3E%3Ctext x='3' y='24' font-size='20' font-weight='900' fill='%23ED1C24' font-family='sans-serif'%3ETGT%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap');
-:root{--bg:#1a1818;--bg2:#242121;--bg3:#2e2b2b;--bg4:#383434;--red:#ED1C24;--red2:#b51219;--w:#fff;--gray:#9D9D9C;--gray2:#575756;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--r:8px;--green:#34d399;--amber:#fbbf24}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden}
-input,select,textarea,button{font-family:inherit}
-button{cursor:pointer;border:none;outline:none}
-a{text-decoration:none;color:inherit}
-
-/* AUTH */
-#auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.abox{background:var(--bg2);border:1px solid var(--b2);border-radius:16px;padding:48px 40px;width:100%;max-width:400px}
-.alogo{display:flex;align-items:center;gap:12px;margin-bottom:36px;justify-content:center}
-.atgt{font-size:40px;font-weight:900;color:var(--red);letter-spacing:-2px;line-height:1}
-.asub{font-size:11px;font-weight:700;color:var(--gray);letter-spacing:2px;text-transform:uppercase;line-height:1.4}
-.atitle{font-size:20px;font-weight:700;margin-bottom:6px;text-align:center}
-.asub2{font-size:13px;color:var(--gray);text-align:center;margin-bottom:28px}
-.lbl{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
-.fld{margin-bottom:18px}
-.inp{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:12px 14px;color:var(--w);font-size:14px;transition:border-color .15s}
-.inp:focus{border-color:var(--red);outline:none}
-.inp::placeholder{color:var(--gray2)}
-.inp option{background:var(--bg3)}
-.btn-p{width:100%;background:var(--red);color:#fff;border-radius:var(--r);padding:13px;font-size:14px;font-weight:700;letter-spacing:.5px;transition:background .15s}
-.btn-p:hover{background:var(--red2)}
-.btn-p:disabled{opacity:.6;cursor:not-allowed}
-.aerr{background:rgba(237,28,36,.12);border:1px solid rgba(237,28,36,.3);color:#f87171;border-radius:var(--r);padding:10px 14px;font-size:13px;margin-bottom:16px;display:none}
-.aerr.show{display:block}
-
-/* LAYOUT */
-#app{display:none;min-height:100vh}
-.sb{width:220px;background:var(--bg2);border-right:1px solid var(--b);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
-.sblogo{padding:20px 20px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px}
-.sbtgt{font-size:26px;font-weight:900;color:var(--red);letter-spacing:-1.5px;line-height:1}
-.sbdiv{width:2px;height:22px;background:var(--b2);border-radius:2px}
-.sbsub{font-size:9px;font-weight:700;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;line-height:1.6}
-.nav{padding:8px 0;flex:1;overflow-y:auto}
-.nsec{font-size:9px;font-weight:700;color:var(--gray2);letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px 4px}
-.ni{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--gray);cursor:pointer;border-left:3px solid transparent;transition:all .15s}
-.ni:hover{background:var(--b);color:var(--w)}
-.ni.active{background:rgba(237,28,36,.1);color:var(--red);border-left-color:var(--red)}
-.ni svg{flex-shrink:0}
-.sbusr{padding:14px 20px;border-top:1px solid var(--b);display:flex;align-items:center;gap:10px}
-.usrav{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-.usrname{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.usrrole{font-size:10px;color:var(--gray)}
-.btnout{background:none;color:var(--gray2);padding:4px;border-radius:4px;transition:color .15s}
-.btnout:hover{color:var(--red)}
-.role-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-left:4px}
-.rb-admin{background:rgba(237,28,36,.2);color:var(--red)}
-.rb-account{background:rgba(69,94,110,.3);color:#8ab4c8}
-.rb-user{background:rgba(87,87,86,.3);color:var(--gray)}
-
-.main{margin-left:220px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:var(--bg2);border-bottom:1px solid var(--b);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
-.tbtitle{font-size:15px;font-weight:700}
-.content{padding:28px;flex:1}
-
-/* TIMER BAR */
-.tbar{background:var(--bg2);border-radius:12px;border:1px solid var(--b);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.tinp{flex:1;min-width:180px;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;color:var(--w);font-size:13px}
-.tinp::placeholder{color:var(--gray2)}
-.tinp:focus{outline:none;border-color:var(--red)}
-.tsel{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;color:var(--w);font-size:13px;min-width:150px}
-.tsel:focus{outline:none;border-color:var(--red)}
-.tsel option{background:var(--bg3)}
-.tclock{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;min-width:100px;text-align:center}
-.tclock.on{color:var(--red)}
-.bgo{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--red);color:#fff;border-radius:var(--r);padding:10px 22px;font-size:13px;font-weight:700;transition:all .15s}
-.bgo:hover{background:var(--red2)}
-.bstop{background:var(--bg3);border:1px solid rgba(237,28,36,.4);color:var(--red)}
-.bstop:hover{background:rgba(237,28,36,.1)}
-
-/* CARDS */
-.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
-.sc{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:18px 20px}
-.slbl{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
-.sval{font-size:28px;font-weight:900;line-height:1}
-.ssub{font-size:11px;color:var(--gray);margin-top:4px}
-.sprog{height:3px;background:var(--bg4);border-radius:2px;margin-top:10px;overflow:hidden}
-.sprogb{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
-
-/* TABLE */
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.stitle{font-size:14px;font-weight:700}
-.tw{background:var(--bg2);border:1px solid var(--b);border-radius:12px;overflow:hidden}
-table{width:100%;border-collapse:collapse}
-thead th{background:var(--bg3);padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);text-align:left;white-space:nowrap}
-tbody tr{border-top:1px solid var(--b)}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-tbody td{padding:11px 16px;font-size:13px}
-.tg{color:var(--gray)}
-.tr{color:var(--red);font-weight:600}
-.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(69,94,110,.3);color:#8ab4c8}
-.empty{padding:40px;text-align:center;color:var(--gray);font-size:13px}
-
-/* BUTTONS */
-.bsm{background:var(--bg3);border:1px solid var(--b2);color:var(--w);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:600;transition:all .15s}
-.bsm:hover{background:var(--bg4)}
-.bsmr{background:rgba(237,28,36,.12);border:1px solid rgba(237,28,36,.3);color:var(--red);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:600;transition:all .15s}
-.bsmr:hover{background:rgba(237,28,36,.2)}
-.bsmg{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:600;transition:all .15s}
-.bsmg:hover{background:rgba(52,211,153,.2)}
-
-/* MODAL */
-.mov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
-.mov.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
-.mh{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--b)}
-.mtitle{font-size:15px;font-weight:700}
-.bx{background:var(--bg3);border:1px solid var(--b2);color:var(--gray);width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .15s}
-.bx:hover{color:var(--w)}
-.mb{padding:24px}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.mf{padding:16px 24px;border-top:1px solid var(--b);display:flex;gap:10px;justify-content:flex-end}
-.bcan{background:var(--bg3);border:1px solid var(--b2);color:var(--w);border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:600;transition:all .15s}
-.bcan:hover{background:var(--bg4)}
-.bsave{background:var(--red);color:#fff;border-radius:var(--r);padding:10px 20px;font-size:13px;font-weight:700;transition:background .15s}
-.bsave:hover{background:var(--red2)}
-.bsave:disabled{opacity:.6;cursor:not-allowed}
-
-/* FILTERS */
-.filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-.fsel{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:7px 12px;color:var(--w);font-size:12px;font-weight:500}
-.fsel:focus{outline:none;border-color:var(--red)}
-.fsel option{background:var(--bg3)}
-
-/* REPORT */
-.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
-.rc{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:20px}
-.rct{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:16px}
-.rrow{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--b)}
-.rrow:last-child{border-bottom:none}
-.rname{font-size:13px;font-weight:500;flex:0 0 130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rbarw{flex:1;height:4px;background:var(--bg4);border-radius:2px;margin:0 12px;overflow:hidden}
-.rbar{height:100%;background:var(--red);border-radius:2px}
-.rhours{font-size:13px;font-weight:700;color:var(--red);flex:0 0 44px;text-align:right}
-
-/* ADMIN PANELS */
-.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.acard{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:20px}
-.actitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.assoc-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.assoc-tag{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
-.assoc-tag button{background:none;color:var(--gray2);font-size:13px;line-height:1;padding:0;transition:color .15s}
-.assoc-tag button:hover{color:var(--red)}
-.tabtabs{display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content}
-.tabtab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:var(--gray);transition:all .15s}
-.tabtab:hover{color:var(--w)}
-.tabtab.active{background:var(--bg2);color:var(--w)}
-
-/* TOAST */
-#toastc{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--bg2);border:1px solid var(--b2);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;min-width:240px;display:flex;align-items:center;gap:10px;animation:sIn .2s ease}
-.toast.success{border-color:rgba(52,211,153,.4);color:var(--green)}
-.toast.error{border-color:rgba(237,28,36,.4);color:#f87171}
-.toast.info{border-color:rgba(96,165,250,.4);color:#60a5fa}
-@keyframes sIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
-
-/* UTILS */
-.spin{width:18px;height:18px;border:2px solid var(--b2);border-top-color:var(--red);border-radius:50%;animation:ro .7s linear infinite;flex-shrink:0}
-@keyframes ro{to{transform:rotate(360deg)}}
-.lc{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:var(--gray);font-size:13px}
-.divider{height:1px;background:var(--b);margin:16px 0}
-.section-info{font-size:12px;color:var(--gray);margin-bottom:16px}
-
-@media(max-width:768px){
-  .sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}
-  .main{margin-left:0}.topbar{padding:0 16px}.content{padding:16px}
-  .frow{grid-template-columns:1fr}.tclock{font-size:20px}
-  #mbtn{display:flex !important}
+:root{
+  --bg:#0f0f0f;--bg2:#171717;--bg3:#1f1f1f;--bg4:#282828;--bg5:#333;
+  --red:#ED1C24;--red-d:#b8151b;--red-g:rgba(237,28,36,.12);
+  --txt:#f5f5f5;--txt2:#999;--txt3:#555;
+  --bdr:#2a2a2a;--bdr2:#383838;
+  --t1:#3b82f6;--t3:#a855f7;--t4:#06b6d4;--pack:#f59e0b;--prod:#10b981;--adm:#ef4444;
+  --r:10px;--rs:6px;
 }
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+input,select,textarea,button{font-family:inherit;font-size:13px}
+button{cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--red);text-decoration:none}
+
+/* ═══ LAYOUT ═══ */
+.wrap{display:flex;min-height:100vh;min-height:100dvh}
+.side{width:230px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s ease}
+.body{flex:1;margin-left:230px;display:flex;flex-direction:column;min-height:100vh}
+.top{height:52px;background:var(--bg2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.page{padding:20px;flex:1;max-width:1440px;width:100%;margin:0 auto}
+
+/* ═══ SIDEBAR ═══ */
+.side .lg{padding:16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.side .lg svg{width:48px;flex-shrink:0}
+.side .lg .lt{font-size:9px;color:var(--txt2);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.side nav{flex:1;padding:8px 0;overflow-y:auto}
+.side nav .sec{padding:6px 16px 2px;font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-top:12px}
+.side nav a{display:flex;align-items:center;gap:10px;padding:8px 16px;color:var(--txt2);text-decoration:none;font-size:12px;font-weight:500;transition:all .15s;border-left:3px solid transparent;line-height:1.2}
+.side nav a:hover{color:var(--txt);background:var(--bg3)}
+.side nav a.on{color:var(--red);border-left-color:var(--red);background:var(--red-g)}
+.side nav a svg{width:16px;height:16px;flex-shrink:0}
+.side .ub{padding:12px 16px;border-top:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.side .ub .av{width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}
+.side .ub .ui{font-size:11px;line-height:1.3;min-width:0}.side .ub .un{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.side .ub .ur{color:var(--txt2);font-size:9px}
+
+/* ═══ MOBILE ═══ */
+.mt{display:none;width:36px;height:36px;align-items:center;justify-content:center;border-radius:var(--rs);background:var(--bg3)}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+@media(max-width:768px){
+  .side{transform:translateX(-100%);width:260px}
+  .side.open{transform:translateX(0)}
+  .body{margin-left:0}
+  .mt{display:flex}
+  .ov.show{display:block}
+  .page{padding:12px}
+  .cards{grid-template-columns:repeat(2,1fr)!important}
+  .grid-2{grid-template-columns:1fr!important}
+  .filters{flex-direction:column}
+  .filters .fc{width:100%!important;min-width:0!important}
+  .tbl-r{overflow-x:auto}
+  .tbl-r table{min-width:600px}
+  .util-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:480px){
+  .cards{grid-template-columns:1fr!important}
+  .timer-display{font-size:36px!important}
+  .top .date-txt{display:none}
+}
+
+/* ═══ CARDS ═══ */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;transition:border-color .2s}
+.card:hover{border-color:var(--bdr2)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+.card .cl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.card .cv{font-size:24px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.card .cs{font-size:11px;color:var(--txt2);margin-top:4px}
+.card-b::before{background:var(--t1)}.card-p::before{background:var(--t3)}.card-c::before{background:var(--t4)}.card-g::before{background:var(--prod)}
+
+/* ═══ TABLE ═══ */
+.tbl{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.tbl-h{padding:12px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.tbl-h h3{font-size:13px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:8px 12px;font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);font-weight:600;white-space:nowrap}
+td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--bdr)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+
+/* ═══ BADGES ═══ */
+.bg{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.bg-t1{background:rgba(59,130,246,.15);color:var(--t1)}
+.bg-t3{background:rgba(168,85,247,.15);color:var(--t3)}
+.bg-t4{background:rgba(6,182,212,.15);color:var(--t4)}
+.bg-pack{background:rgba(245,158,11,.15);color:var(--pack)}
+.bg-prod{background:rgba(16,185,129,.15);color:var(--prod)}
+.bg-adm{background:rgba(239,68,68,.15);color:var(--adm)}
+
+/* ═══ PROGRESS ═══ */
+.pb{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-top:4px}
+.pb-f{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ═══ FORMS ═══ */
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--txt2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.fc{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rs);color:var(--txt);font-size:12px;outline:none;transition:border .2s}
+.fc:focus{border-color:var(--red)}
+select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+/* ═══ BUTTONS ═══ */
+.btn{padding:7px 16px;border-radius:var(--rs);font-size:12px;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-r{background:var(--red);color:#fff}.btn-r:hover{background:var(--red-d)}
+.btn-s{background:var(--bg3);color:var(--txt);border:1px solid var(--bdr)}.btn-s:hover{border-color:var(--txt3)}
+.btn-sm{padding:4px 10px;font-size:10px}
+.btn-i{width:28px;height:28px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--bdr);flex-shrink:0}.btn-i:hover{border-color:var(--red);color:var(--red)}
+
+/* ═══ TIMER ═══ */
+.timer-display{font-size:52px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:3px;text-align:center;padding:20px 0}
+.timer-on{color:var(--red);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.timer-dot{display:inline-block;width:10px;height:10px;background:var(--red);border-radius:50%;margin-right:8px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.timer-btn{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s}
+.timer-go{background:var(--red);color:#fff;box-shadow:0 0 20px rgba(237,28,36,.3)}.timer-go:hover{box-shadow:0 0 30px rgba(237,28,36,.5);transform:scale(1.05)}
+.timer-no{background:var(--bg4);color:var(--red);border:2px solid var(--red)}
+
+/* ═══ FILTERS ═══ */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filters .fc{width:auto;min-width:140px}
+
+/* ═══ QUICK DATE FILTERS ═══ */
+.qf{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.qf button{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;background:var(--bg3);border:1px solid var(--bdr);color:var(--txt2);transition:all .15s}
+.qf button:hover{border-color:var(--txt3);color:var(--txt)}
+.qf button.on{background:var(--red);border-color:var(--red);color:#fff}
+
+/* ═══ CHART BARS ═══ */
+.cb{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.cb .cb-l{width:100px;font-size:11px;color:var(--txt2);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb .cb-t{flex:1;height:22px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.cb .cb-f{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;padding:0 6px;min-width:fit-content}
+.cb .cb-v{font-size:10px;font-weight:700;white-space:nowrap}
+
+/* ═══ SECTION ═══ */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.sh h2{font-size:16px;font-weight:800}
+
+/* ═══ MODAL ═══ */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:16px}
+.mo.show{display:flex}
+.mo-c{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);width:100%;max-width:480px;max-height:90vh;max-height:90dvh;overflow-y:auto;padding:20px}
+.mo-c h3{font-size:14px;font-weight:700;margin-bottom:16px}
+
+/* ═══ TOAST ═══ */
+.tc{position:fixed;top:12px;right:12px;z-index:300;display:flex;flex-direction:column;gap:6px}
+.tt{padding:10px 16px;border-radius:var(--rs);font-size:12px;font-weight:500;animation:si .25s ease;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.tt-s{background:#16a34a;color:#fff}.tt-e{background:var(--red);color:#fff}.tt-i{background:var(--t1);color:#fff}
+@keyframes si{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ═══ LOGIN ═══ */
+.lp{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;background:var(--bg);padding:16px}
+.lb{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:32px;width:100%;max-width:360px;text-align:center}
+.lb .logo-big svg{width:100px;margin-bottom:4px}
+.lb .tl{font-size:10px;color:var(--txt2);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+.lb .fg{text-align:left}
+
+/* ═══ UTIL GRID ═══ */
+.util-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.uc{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:14px;transition:border-color .2s}
+.uc:hover{border-color:var(--bdr2)}
+.uc .nm{font-size:13px;font-weight:700;margin-bottom:1px}.uc .mt{font-size:10px;color:var(--txt2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.uc .sr{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+
+/* ═══ GRID HELPERS ═══ */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ═══ ALERT ═══ */
+.ad{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
+.ad-r{background:var(--red)}.ad-y{background:var(--pack)}.ad-g{background:var(--prod)}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+
+/* ═══ LOADING ═══ */
+.ld{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--txt2);font-size:12px}
+.sp{width:20px;height:20px;border:2px solid var(--bdr);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ EMPTY STATE ═══ */
+.empty{text-align:center;color:var(--txt3);padding:40px 20px;font-size:12px}
 </style>
 </head>
 <body>
-
-<!-- AUTH -->
-<div id="auth">
-  <div class="abox">
-    <div class="alogo">
-      <span class="atgt">TGT</span>
-      <div><div class="asub">Time</div><div style="font-size:8px;color:var(--gray2);letter-spacing:1px;margin-top:2px">CONTROLE DE HORAS</div></div>
-    </div>
-    <h2 class="atitle">Acesso</h2>
-    <p class="asub2">Entre com suas credenciais TGT Studio</p>
-    <div id="aerr" class="aerr"></div>
-    <form id="lform">
-      <div class="fld"><label class="lbl">E-mail</label><input class="inp" id="femail" type="email" placeholder="seu@tgtstudio.com.br" required></div>
-      <div class="fld"><label class="lbl">Senha</label><input class="inp" id="fpass" type="password" placeholder="••••••••" required></div>
-      <button type="submit" class="btn-p" id="lbtn">Entrar</button>
-    </form>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app">
-  <aside class="sb" id="sb">
-    <div class="sblogo">
-      <span class="sbtgt">TGT</span><div class="sbdiv"></div>
-      <div class="sbsub">Time<br>Tracker</div>
-    </div>
-    <nav class="nav" id="mainnav"></nav>
-    <div class="sbusr">
-      <div class="usrav" id="uav">?</div>
-      <div style="flex:1;min-width:0">
-        <div class="usrname" id="uname">—</div>
-        <div class="usrrole" id="urole">—</div>
-      </div>
-      <button class="btnout" onclick="doLogout()" title="Sair">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </button>
-    </div>
-  </aside>
-
-  <div class="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button id="mbtn" onclick="toggleSb()" style="display:none;background:none;color:var(--w);padding:4px">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <span class="tbtitle" id="pgtitle">Timer</span>
-      </div>
-      <span style="font-size:12px;color:var(--gray)" id="curdate"></span>
-    </div>
-    <div class="content" id="pg"></div>
-  </div>
-</div>
-
-<!-- MODALS -->
-<div class="mov" id="m-entry">
-  <div class="modal">
-    <div class="mh"><span class="mtitle" id="m-entry-t">Novo Lançamento</span><button class="bx" onclick="closeM('m-entry')">✕</button></div>
-    <div class="mb">
-      <div class="fld"><label class="lbl">Descrição</label><input class="inp" id="e-desc" placeholder="Ex: Criação de posts semana 1"></div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">Data</label><input class="inp" id="e-date" type="date"></div>
-        <div class="fld"><label class="lbl">Horas</label><input class="inp" id="e-hours" type="number" step="0.25" min="0.25" max="24" placeholder="2.5"></div>
-      </div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">Cliente</label><select class="inp" id="e-client" onchange="loadProjectsForEntry()"></select></div>
-        <div class="fld"><label class="lbl">Projeto</label><select class="inp" id="e-project"><option value="">Selecionar</option></select></div>
-      </div>
-      <div class="fld" id="e-member-wrap"><label class="lbl">Pessoa</label><select class="inp" id="e-member"></select></div>
-    </div>
-    <div class="mf">
-      <button class="bcan" onclick="closeM('m-entry')">Cancelar</button>
-      <button class="bsave" id="e-save" onclick="saveEntry()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mov" id="m-member">
-  <div class="modal">
-    <div class="mh"><span class="mtitle" id="m-member-t">Nova Pessoa</span><button class="bx" onclick="closeM('m-member')">✕</button></div>
-    <div class="mb">
-      <div class="fld"><label class="lbl">Nome Completo</label><input class="inp" id="mb-name" placeholder="Nome"></div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">E-mail</label><input class="inp" id="mb-email" type="email" placeholder="email@tgtstudio.com.br"></div>
-        <div class="fld"><label class="lbl">Função</label><input class="inp" id="mb-role-inp" placeholder="Designer"></div>
-      </div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">Time</label>
-          <select class="inp" id="mb-team"><option value="T1">T1</option><option value="T3">T3</option><option value="T4">T4</option><option value="PACK">Pack</option><option value="PROD">PROD</option><option value="ADM">ADM</option></select>
-        </div>
-        <div class="fld"><label class="lbl">Nível de Acesso</label>
-          <select class="inp" id="mb-access"><option value="user">Operador / User</option><option value="account">Account</option><option value="admin">ADM Full</option></select>
-        </div>
-      </div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">Capacidade (h/mês)</label><input class="inp" id="mb-cap" type="number" value="140"></div>
-        <div class="fld"><label class="lbl">Senha (novo usuário)</label><input class="inp" id="mb-pass" type="password" placeholder="Deixe em branco para manter"></div>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="bcan" onclick="closeM('m-member')">Cancelar</button>
-      <button class="bsave" id="mb-save" onclick="saveMember()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mov" id="m-client">
-  <div class="modal">
-    <div class="mh"><span class="mtitle" id="m-client-t">Novo Cliente</span><button class="bx" onclick="closeM('m-client')">✕</button></div>
-    <div class="mb">
-      <div class="fld"><label class="lbl">Nome do Cliente</label><input class="inp" id="cl-name" placeholder="Ex: Kerry Institucional"></div>
-      <div class="frow">
-        <div class="fld"><label class="lbl">Time Responsável</label>
-          <select class="inp" id="cl-team"><option value="T1">T1</option><option value="T3">T3</option><option value="T4">T4</option><option value="Pack">Pack</option><option value="PROD">PROD</option></select>
-        </div>
-        <div class="fld"><label class="lbl">Meta Mensal (h)</label><input class="inp" id="cl-target" type="number" placeholder="100"></div>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="bcan" onclick="closeM('m-client')">Cancelar</button>
-      <button class="bsave" onclick="saveClient()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mov" id="m-project">
-  <div class="modal">
-    <div class="mh"><span class="mtitle">Novo Projeto</span><button class="bx" onclick="closeM('m-project')">✕</button></div>
-    <div class="mb">
-      <div class="fld"><label class="lbl">Nome do Projeto</label><input class="inp" id="pr-name" placeholder="Ex: Redes Sociais"></div>
-      <div class="fld"><label class="lbl">Cliente</label><select class="inp" id="pr-client"></select></div>
-      <div class="fld"><label class="lbl">Descrição (opcional)</label><input class="inp" id="pr-desc" placeholder="Descrição"></div>
-    </div>
-    <div class="mf">
-      <button class="bcan" onclick="closeM('m-project')">Cancelar</button>
-      <button class="bsave" onclick="saveProject()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mov" id="m-assoc">
-  <div class="modal" style="max-width:600px">
-    <div class="mh"><span class="mtitle" id="m-assoc-t">Associações</span><button class="bx" onclick="closeM('m-assoc')">✕</button></div>
-    <div class="mb" id="m-assoc-body"></div>
-    <div class="mf"><button class="bcan" onclick="closeM('m-assoc')">Fechar</button></div>
-  </div>
-</div>
-
-<div id="toastc"></div>
+<div id="app"></div>
+<div class="tc" id="toasts"></div>
+<div class="mo" id="modal"></div>
+<div class="ov" id="overlay" onclick="toggleMenu()"></div>
 
 <script>
-const SB='https://opqivuzvyvvvajokutvc.supabase.co';
-const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcWl2dXp2eXZ2dmFqb2t1dHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTg0ODIsImV4cCI6MjA5MDQ3NDQ4Mn0.7mH_9ikNMnM2zfUFQrb1ot6t47plzib6No2GPT0gfa0';
+// ═══════════════════════════════════════
+// TGT TIME v5 — CEO Dashboard Edition
+// ═══════════════════════════════════════
+const SB='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcWl2dXp2eXZ2dmFqb2t1dHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTg0ODIsImV4cCI6MjA5MDQ3NDQ4Mn0.7mH_9ikNMnM2zfUFQrb1ot6t47plzib6No2GPT0gfa0';
+const SU='https://opqivuzvyvvvajokutvc.supabase.co';
+const CATS=['Design','Social Media','Edição','Captação','Reunião','Estratégia','Performance','Embalagem','ADM'];
+const CC={'Design':'#3b82f6','Social Media':'#a855f7','Edição':'#f59e0b','Captação':'#06b6d4','Reunião':'#ef4444','Estratégia':'#10b981','Performance':'#f97316','Embalagem':'#ec4899','ADM':'#6b7280'};
+const TC={T1:'var(--t1)',T3:'var(--t3)',T4:'var(--t4)',PACK:'var(--pack)',PROD:'var(--prod)',ADM:'var(--adm)'};
+const TB=t=>`<span class="bg bg-${(t||'').toLowerCase()}">${t||'—'}</span>`;
 
-// STATE
-let sess=null, me=null, members=[], clients=[], projects=[];
-let acMembers={}, acClients={};  // account associations
-let timerInt=null, timerStart=null, timerSec=0, running=null;
-let curPage='timer', editId=null;
-let fMonth=new Date().toISOString().slice(0,7), fMember='', fClient='', fProject='';
+// ─── State ───
+let S={
+  user:null,page:'timer',
+  members:[],clients:[],entries:[],
+  timerRunning:false,timerEntry:null,timerInterval:null,
+  // Filters
+  dateRange:'month',dateFrom:'',dateTo:'',
+  fMember:'',fClient:'',fTeam:'',fCat:'',
+  currentMember:null
+};
 
-// API
-async function req(method,path,body,tok){
-  const h={'Content-Type':'application/json','apikey':KEY,'Authorization':`Bearer ${tok||KEY}`};
-  if(method==='POST')h['Prefer']='return=representation';
-  if(method==='PATCH')h['Prefer']='return=representation';
-  const r=await fetch(`${SB}/rest/v1/${path}`,{method,headers:h,body:body?JSON.stringify(body):undefined});
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||r.statusText)}
-  if(r.status===204)return null;
-  return r.json();
-}
-async function authReq(method,path,body){
-  const h={'Content-Type':'application/json','apikey':KEY};
-  const r=await fetch(`${SB}/auth/v1/${path}`,{method,headers:h,body:JSON.stringify(body)});
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error_description||d.msg||'Erro de autenticação');
-  return d;
-}
-const tok=()=>sess?.access_token;
-const isAdmin=()=>me?.access_level==='admin';
-const isAccount=()=>me?.access_level==='account'||isAdmin();
+// ─── Date range helpers ───
+function today(){return new Date().toISOString().substring(0,10)}
+function dateObj(s){const[y,m,d]=s.split('-');return new Date(y,m-1,d)}
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
+function fmtDate(d){return d.toISOString().substring(0,10)}
+function startOfWeek(d){const r=new Date(d);r.setDate(r.getDate()-r.getDay());return r}
+function startOfMonth(d){return new Date(d.getFullYear(),d.getMonth(),1)}
+function endOfMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0)}
+function startOfYear(d){return new Date(d.getFullYear(),0,1)}
 
-// AUTH
-document.getElementById('lform').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const btn=document.getElementById('lbtn'),err=document.getElementById('aerr');
-  err.classList.remove('show'); btn.disabled=true; btn.textContent='Entrando...';
-  try{
-    console.log('Tentando login...');
-    sess=await authReq('POST','token?grant_type=password',{email:document.getElementById('femail').value,password:document.getElementById('fpass').value});
-    console.log('Resposta auth:', sess?.access_token ? 'token OK' : 'sem token', sess);
-    if(!sess?.access_token)throw new Error('Resposta inválida do servidor');
-    localStorage.setItem('tgt_sess',JSON.stringify(sess));
-    console.log('Chamando boot()...');
-    await boot();
-    console.log('Boot concluído');
-  }catch(ex){
-    console.error('Erro login:', ex);
-    err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');
+function getDateRange(range){
+  const now=new Date();
+  const t=today();
+  switch(range){
+    case 'today':return[t,t];
+    case 'yesterday':{const y=addDays(now,-1);return[fmtDate(y),fmtDate(y)]}
+    case 'week':{return[fmtDate(startOfWeek(now)),t]}
+    case 'lastweek':{const s=addDays(startOfWeek(now),-7);return[fmtDate(s),fmtDate(addDays(s,6))]}
+    case 'month':{return[fmtDate(startOfMonth(now)),t]}
+    case 'lastmonth':{const pm=new Date(now.getFullYear(),now.getMonth()-1,1);return[fmtDate(pm),fmtDate(endOfMonth(pm))]}
+    case 'year':{return[fmtDate(startOfYear(now)),t]}
+    case 'custom':return[S.dateFrom||t,S.dateTo||t];
+    default:return[fmtDate(startOfMonth(now)),t];
   }
-  finally{btn.disabled=false;btn.textContent='Entrar';}
-});
-
-async function doLogout(){
-  localStorage.removeItem('tgt_sess');
-  sess=null;me=null;clearInterval(timerInt);
-  document.getElementById('auth').style.display='flex';
-  document.getElementById('app').style.display='none';
 }
 
-async function boot(){
-  console.log('boot() iniciado, sess:', sess?.access_token ? 'ok' : 'nulo');
-  document.getElementById('auth').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('curdate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
-  await loadAll();
-  buildNav();
-  nav('timer');
-  const sv=localStorage.getItem('tgt_run');
-  if(sv){try{const r=JSON.parse(sv);running=r;timerStart=new Date(r.started_at);timerSec=0;startTick();}catch{localStorage.removeItem('tgt_run');}}
+const RANGE_LABELS={'today':'Hoje','yesterday':'Ontem','week':'Esta semana','lastweek':'Semana passada','month':'Este mês','lastmonth':'Mês passado','year':'Este ano','custom':'Personalizado'};
+
+// ─── API ───
+async function api(m,p,b){
+  const h={'Content-Type':'application/json','apikey':SB,'Authorization':`Bearer ${SB}`};
+  if(m==='GET')h['Accept']='application/json';else h['Prefer']='return=representation';
+  const o={method:m,headers:h};
+  if(b&&m!=='GET')o.body=JSON.stringify(b);
+  const r=await fetch(`${SU}/rest/v1/${p}`,o);
+  if(!r.ok)throw new Error(`API ${r.status}: ${await r.text()}`);
+  const t=await r.text();return t?JSON.parse(t):null;
 }
 
-// LOAD ALL DATA
+function toast(msg,type='i'){const d=document.createElement('div');d.className=`tt tt-${type}`;d.textContent=msg;document.getElementById('toasts').appendChild(d);setTimeout(()=>d.remove(),3000)}
+
+// ─── Data ───
 async function loadAll(){
-  console.log('loadAll() chamado, tok:', tok() ? 'ok' : 'nulo');
-  try{
-    const [m,c,p]=await Promise.all([
-      req('GET','tt_members?select=*&order=name',null,tok()),
-      req('GET','tt_clients?select=*&order=name',null,tok()),
-      req('GET','tt_projects?select=*&order=name',null,tok())
-    ]);
-    members=m||[];clients=c||[];projects=p||[];
-    console.log('loadAll dados:', members.length,'membros',clients.length,'clientes',projects.length,'projetos');
-
-    // Find current user - try multiple ways
-    const userEmail=sess?.user?.email||sess?.email||null;
-    console.log('userEmail:', userEmail);
-    if(userEmail){
-      me=members.find(m=>m.email===userEmail);
-    }
-    if(!me&&members.length>0){
-      // fallback: find by auth_id
-      const uid=sess?.user?.id||sess?.id;
-      if(uid) me=members.find(m=>m.auth_id===uid);
-    }
-    if(!me&&members.length>0) me=members[0];
-    console.log('me:', me?.name, me?.access_level);
-
-    // Load account associations if account role
-    if(me && me.access_level==='account'){
-      const [amc,acc]=await Promise.all([
-        req('GET',`tt_account_members?select=*&account_id=eq.${me.id}`,null,tok()),
-        req('GET',`tt_account_clients?select=*&account_id=eq.${me.id}`,null,tok())
-      ]);
-      acMembers[me.id]=(amc||[]).map(x=>x.member_id);
-      acClients[me.id]=(acc||[]).map(x=>x.client_id);
-    }
-
-    if(me){
-      const ini=me.name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
-      document.getElementById('uav').textContent=ini;
-      document.getElementById('uname').textContent=me.name.split(' ')[0];
-      const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-      document.getElementById('urole').textContent=`${me.team||''} · ${roleLabels[me.access_level]||'User'}`;
-    }
-  }catch(ex){
-    console.error('loadAll error:',ex);
-    toast('Erro ao carregar dados: '+ex.message,'error');
-  }
+  const[members,clients]=await Promise.all([
+    api('GET','tt_members?or=(is_active.eq.true,active.eq.true)&order=team,name'),
+    api('GET','tt_clients?or=(is_active.eq.true,active.eq.true)&order=team,name')
+  ]);
+  S.members=members||[];S.clients=clients||[];
 }
 
-// FILTERED DATA for current user
-function myClients(){
-  if(isAdmin())return clients;
-  if(me?.access_level==='account')return clients.filter(c=>acClients[me.id]?.includes(c.id));
-  return clients; // user sees all clients (filtered in entries)
-}
-function myMembers(){
-  if(isAdmin())return members;
-  if(me?.access_level==='account')return members.filter(m=>acMembers[me.id]?.includes(m.id));
-  return me?[me]:[];
-}
-function myProjects(clientId){
-  if(!clientId)return projects;
-  return projects.filter(p=>p.client_id===clientId);
+async function loadEntries(from,to){
+  const e=await api('GET',`tt_time_entries?started_at=gte.${from}T00:00:00&started_at=lte.${to}T23:59:59&is_running=eq.false&order=started_at.desc`);
+  S.entries=e||[];
 }
 
-// NAV
-function buildNav(){
-  const nav=document.getElementById('mainnav');
-  const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-  const rl=me?.access_level||'user';
-  let html=`
-    <div class="nsec">Principal</div>
-    <div class="ni active" data-p="timer" onclick="nav('timer')">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timer
+async function loadRunning(){return(await api('GET','tt_time_entries?is_running=eq.true'))||[]}
+
+// ─── Helpers ───
+function fH(h){return h!=null?(Math.round(h*10)/10).toFixed(1)+'h':'0.0h'}
+function fD(m){if(!m)return'0:00';const h=Math.floor(m/60),mm=Math.round(m%60);return`${h}:${String(mm).padStart(2,'0')}`}
+function fT(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`}
+function mn(id){return S.members.find(m=>m.id===id)?.name||'—'}
+function cn(id){return S.clients.find(c=>c.id===id)?.name||'—'}
+function mt(id){return S.members.find(m=>m.id===id)?.team||''}
+function gm(id){return S.members.find(m=>m.id===id)}
+function isA(){return S.currentMember?.access_level==='admin'}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function toggleMenu(fc){
+  const s=document.getElementById('sidebar'),o=document.getElementById('overlay');
+  if(!s)return;
+  if(fc||s.classList.contains('open')){s.classList.remove('open');o?.classList.remove('show')}
+  else{s.classList.add('open');o?.classList.add('show')}
+}
+
+function filterEntries(entries){
+  let f=entries;
+  if(S.fMember)f=f.filter(e=>e.member_id===S.fMember);
+  if(S.fClient)f=f.filter(e=>e.client_id===S.fClient);
+  if(S.fTeam)f=f.filter(e=>mt(e.member_id)===S.fTeam);
+  if(S.fCat)f=f.filter(e=>e.task_category===S.fCat);
+  if(!isA())f=f.filter(e=>e.member_id===S.currentMember.id);
+  return f;
+}
+
+// ─── SVG ───
+const LG=`<svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg"><text x="2" y="30" font-family="Montserrat" font-weight="900" font-size="34" fill="#ED1C24">TGT</text></svg>`;
+const I={
+  timer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+  brief:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>',
+  dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+  out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
+  menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+};
+
+// ═══ RENDER ═══
+function render(){
+  if(!S.user)return renderLogin();
+  const a=document.getElementById('app');
+  const pages=[
+    ['timer','Timer',I.timer,'op'],
+    ['entries','Lançamentos',I.list,'op'],
+    ['dash_me','Meu Painel',I.chart,'dash'],
+    ['dash_client','Por Cliente',I.brief,'dash'],
+    ...(isA()?[['dash_team','Por Time',I.dash,'dash'],['dash_people','Por Pessoa',I.users,'dash'],['dash_fin','Financeiro',I.dollar,'dash']]:[]),
+    ...(isA()?[['adm_members','Pessoas',I.users,'adm'],['adm_clients','Clientes',I.brief,'adm']]:[]),
+  ];
+  let nav='';let sec='';
+  pages.forEach(([k,l,ic,s])=>{
+    const secs={op:'Operação',dash:'Dashboards',adm:'Admin'};
+    if(s!==sec){nav+=`<div class="sec">${secs[s]}</div>`;sec=s}
+    nav+=`<a href="#" onclick="goTo('${k}');event.preventDefault()" class="${S.page===k?'on':''}">${ic} ${l}</a>`;
+  });
+  
+  a.innerHTML=`
+    <div class="side" id="sidebar">
+      <div class="lg">${LG}<div><div style="font-size:11px;font-weight:700;color:var(--txt)">TIME</div><div class="lt">Tracker</div></div></div>
+      <nav>${nav}</nav>
+      <div class="ub">
+        <div class="av">${(S.currentMember?.name||'?')[0]}</div>
+        <div class="ui"><div class="un">${S.currentMember?.name?.split(' ').slice(0,2).join(' ')||''}</div><div class="ur">${S.currentMember?.team||''} · ${S.currentMember?.job_title||''}</div></div>
+        <button class="btn-i" onclick="doLogout()" title="Sair" style="margin-left:auto">${I.out}</button>
+      </div>
     </div>
-    <div class="ni" data-p="entries" onclick="nav('entries')">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Lançamentos
-    </div>`;
-  if(isAccount()){
-    html+=`
-      <div class="nsec">Relatórios</div>
-      <div class="ni" data-p="r-team" onclick="nav('r-team')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Por Time
+    <div class="body">
+      <div class="top">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="mt" onclick="toggleMenu()">${I.menu}</button>
+          <span style="font-size:14px;font-weight:700">${pages.find(p=>p[0]===S.page)?.[1]||''}</span>
+        </div>
+        <span class="date-txt" style="font-size:11px;color:var(--txt2)">${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</span>
       </div>
-      <div class="ni" data-p="r-client" onclick="nav('r-client')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Por Cliente
-      </div>
-      <div class="ni" data-p="r-person" onclick="nav('r-person')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Por Pessoa
-      </div>`;
-  }
-  if(isAdmin()){
-    html+=`
-      <div class="nsec">Admin</div>
-      <div class="ni" data-p="adm-members" onclick="nav('adm-members')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Pessoas
-      </div>
-      <div class="ni" data-p="adm-clients" onclick="nav('adm-clients')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Clientes
-      </div>
-      <div class="ni" data-p="adm-projects" onclick="nav('adm-projects')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Projetos
-      </div>
-      <div class="ni" data-p="adm-accounts" onclick="nav('adm-accounts')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Permissões
-      </div>`;
-  }
-  nav.innerHTML=html;
-}
-
-const TITLES={timer:'Timer',entries:'Lançamentos','r-team':'Por Time','r-client':'Por Cliente','r-person':'Por Pessoa','adm-members':'Pessoas','adm-clients':'Clientes','adm-projects':'Projetos','adm-accounts':'Permissões de Acesso'};
-function nav(page){
-  curPage=page;
-  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.p===page));
-  document.getElementById('pgtitle').textContent=TITLES[page]||page;
+      <div class="page" id="pg"><div class="ld"><div class="sp"></div>Carregando...</div></div>
+    </div>
+  `;
   renderPage();
 }
 
+function goTo(p){S.page=p;render();toggleMenu(true)}
+
+// ─── Quick date filter bar ───
+function dateFilterBar(){
+  return `<div class="qf" id="qf">
+    ${Object.entries(RANGE_LABELS).map(([k,v])=>`<button class="${S.dateRange===k?'on':''}" onclick="setRange('${k}')">${v}</button>`).join('')}
+  </div>
+  ${S.dateRange==='custom'?`<div class="filters" style="margin-bottom:12px">
+    <input type="date" class="fc" value="${S.dateFrom||today()}" onchange="S.dateFrom=this.value;renderPage()" style="width:auto">
+    <span style="color:var(--txt3);font-size:12px">até</span>
+    <input type="date" class="fc" value="${S.dateTo||today()}" onchange="S.dateTo=this.value;renderPage()" style="width:auto">
+  </div>`:''}`;
+}
+
+function setRange(r){S.dateRange=r;renderPage()}
+
+// ─── Entity filter bar ───
+function entityFilters(opts={}){
+  const showMember=opts.member!==false&&isA();
+  const showClient=opts.client!==false;
+  const showTeam=opts.team!==false&&isA();
+  const showCat=opts.cat!==false;
+  return `<div class="filters">
+    ${showTeam?`<select class="fc" onchange="S.fTeam=this.value;renderPage()" style="width:auto;min-width:100px">
+      <option value="">Todos os times</option>
+      ${['T1','T3','T4','PACK','PROD','ADM'].map(t=>`<option value="${t}" ${S.fTeam===t?'selected':''}>${t}</option>`).join('')}
+    </select>`:''}
+    ${showMember?`<select class="fc" onchange="S.fMember=this.value;renderPage()" style="width:auto;min-width:140px">
+      <option value="">Todas as pessoas</option>
+      ${S.members.filter(m=>!S.fTeam||m.team===S.fTeam).map(m=>`<option value="${m.id}" ${S.fMember===m.id?'selected':''}>${m.name.split(' ').slice(0,2).join(' ')}</option>`).join('')}
+    </select>`:''}
+    ${showClient?`<select class="fc" onchange="S.fClient=this.value;renderPage()" style="width:auto;min-width:140px">
+      <option value="">Todos os clientes</option>
+      ${S.clients.map(c=>`<option value="${c.id}" ${S.fClient===c.id?'selected':''}>${c.name}</option>`).join('')}
+    </select>`:''}
+    ${showCat?`<select class="fc" onchange="S.fCat=this.value;renderPage()" style="width:auto;min-width:120px">
+      <option value="">Todas categorias</option>
+      ${CATS.map(c=>`<option value="${c}" ${S.fCat===c?'selected':''}>${c}</option>`).join('')}
+    </select>`:''}
+  </div>`;
+}
+
+// ═══ PAGES ═══
 async function renderPage(){
-  const el=document.getElementById('pg');
-  el.innerHTML='<div class="lc"><div class="spin"></div><span>Carregando...</span></div>';
+  const el=document.getElementById('pg');if(!el)return;
   try{
-    const pages={
-      timer:pgTimer,entries:pgEntries,'r-team':pgRTeam,'r-client':pgRClient,'r-person':pgRPerson,
-      'adm-members':pgAdmMembers,'adm-clients':pgAdmClients,'adm-projects':pgAdmProjects,'adm-accounts':pgAdmAccounts
-    };
-    if(pages[curPage]) await pages[curPage](el);
-    else el.innerHTML='<div class="empty">Página não encontrada</div>';
-  }catch(ex){el.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;console.error(ex);}
+    const[from,to]=getDateRange(S.dateRange);
+    if(['entries','dash_me','dash_client','dash_team','dash_people','dash_fin'].includes(S.page))await loadEntries(from,to);
+    switch(S.page){
+      case'timer':await pgTimer(el);break;
+      case'entries':pgEntries(el);break;
+      case'dash_me':pgDashMe(el);break;
+      case'dash_client':pgDashClient(el);break;
+      case'dash_team':pgDashTeam(el);break;
+      case'dash_people':pgDashPeople(el);break;
+      case'dash_fin':pgDashFin(el);break;
+      case'adm_members':pgAdmMembers(el);break;
+      case'adm_clients':pgAdmClients(el);break;
+    }
+  }catch(e){el.innerHTML=`<div style="color:var(--red);padding:20px">Erro: ${e.message}</div>`;console.error(e)}
 }
 
-// TIMER
-function startTick(){
-  clearInterval(timerInt);
-  timerInt=setInterval(()=>{if(timerStart){timerSec=(Date.now()-timerStart.getTime())/1000;updClock();}},1000);
-}
-function updClock(){
-  const el=document.getElementById('tclock');if(!el)return;
-  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=Math.floor(timerSec%60);
-  el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  el.className='tclock'+(running?' on':'');
-}
-async function startTimer(){
-  const desc=document.getElementById('tdesc')?.value?.trim();
-  const cid=document.getElementById('tclient')?.value;
-  const pid=document.getElementById('tproject')?.value;
-  if(!desc){toast('Informe uma descrição','error');return;}
-  if(!cid){toast('Selecione um cliente','error');return;}
-  if(!me){toast('Membro não encontrado','error');return;}
-  const now=new Date().toISOString();
-  running={description:desc,client_id:cid,project_id:pid||null,member_id:me.id,started_at:now,date:now.split('T')[0]};
-  timerStart=new Date(now);timerSec=0;
-  localStorage.setItem('tgt_run',JSON.stringify(running));
-  startTick();renderTimerBtns();toast('Timer iniciado','success');
-}
-async function stopTimer(){
-  if(!running||!timerStart)return;
-  clearInterval(timerInt);
-  const hours=timerSec/3600;
-  if(hours<0.01){toast('Tempo muito curto','error');resetTimer();return;}
-  try{
-    await req('POST','tt_time_entries',{description:running.description,client_id:running.client_id,project_id:running.project_id||null,member_id:running.member_id,date:running.date,hours:Math.round(hours*100)/100,started_at:running.started_at,ended_at:new Date().toISOString()},tok());
-    toast(`${fmtH(hours)} registradas`,'success');resetTimer();
-    if(curPage==='entries')renderPage();else loadToday();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-function resetTimer(){running=null;timerStart=null;timerSec=0;localStorage.removeItem('tgt_run');clearInterval(timerInt);updClock();renderTimerBtns();}
-function renderTimerBtns(){
-  const s=document.getElementById('tbtnstart'),p=document.getElementById('tbtinstop');
-  if(!s||!p)return;
-  s.style.display=running?'none':'flex';p.style.display=running?'flex':'none';
-}
-function onTimerClientChange(){
-  const cid=document.getElementById('tclient')?.value;
-  const ps=document.getElementById('tproject');if(!ps)return;
-  const projs=myProjects(cid);
-  ps.innerHTML='<option value="">Sem projeto</option>'+projs.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-}
-
-// PAGE: TIMER
+// ─── TIMER ───
 async function pgTimer(el){
-  const mc=myClients();
-  const cOpts=mc.map(c=>`<option value="${c.id}"${c.id==running?.client_id?' selected':''}>${c.name}</option>`).join('');
+  const running=await loadRunning();
+  const my=running.find(e=>e.member_id===S.currentMember?.id);
+  if(my){S.timerRunning=true;S.timerEntry=my}
+  const elapsed=S.timerRunning&&S.timerEntry?Math.floor((Date.now()-new Date(S.timerEntry.started_at).getTime())/1000):0;
+
   el.innerHTML=`
-    <div class="tbar">
-      <input class="tinp" id="tdesc" placeholder="O que está trabalhando?" value="${running?.description||''}" ${running?'disabled':''}>
-      <select class="tsel" id="tclient" onchange="onTimerClientChange()" ${running?'disabled':''}><option value="">Selecionar cliente</option>${cOpts}</select>
-      <select class="tsel" id="tproject" ${running?'disabled':''}><option value="">Sem projeto</option></select>
-      <span class="tclock${running?' on':''}" id="tclock">00:00:00</span>
-      <button class="bgo" id="tbtnstart" onclick="startTimer()" style="${running?'display:none':'display:flex'}">
-        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Iniciar
-      </button>
-      <button class="bgo bstop" id="tbtinstop" onclick="stopTimer()" style="${running?'display:flex':'display:none'}">
-        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Parar
-      </button>
-    </div>
-    <div class="sgrid">
-      <div class="sc"><div class="slbl">Hoje</div><div class="sval" id="st-t">—</div><div class="ssub">horas registradas</div></div>
-      <div class="sc"><div class="slbl">Essa Semana</div><div class="sval" id="st-w">—</div><div class="ssub">horas</div></div>
-      <div class="sc"><div class="slbl">Mês Atual</div><div class="sval" id="st-m">—</div><div class="ssub" id="st-ms">de — meta</div><div class="sprog"><div class="sprogb" id="st-mb" style="width:0%"></div></div></div>
-      <div class="sc"><div class="slbl">Timer</div><div class="sval" style="color:${running?'var(--red)':'var(--gray2)'}">●</div><div class="ssub">${running?'Rodando':'Parado'}</div></div>
-    </div>
-    <div class="sh">
-      <span class="stitle">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</span>
-      <button class="bsmr" onclick="openNewEntry()">+ Manual</button>
-    </div>
-    <div id="twrap"></div>`;
-  if(running){timerSec=(Date.now()-timerStart.getTime())/1000;updClock();onTimerClientChange();if(running.project_id){const ps=document.getElementById('tproject');if(ps)ps.value=running.project_id;}}
-  else{onTimerClientChange();}
-  loadToday();
-}
-
-async function loadToday(){
-  if(curPage!=='timer')return;
-  const today=new Date().toISOString().split('T')[0];
-  try{
-    let q=`tt_time_entries?select=*,member:tt_members(id,name),client:tt_clients(id,name),project:tt_projects(id,name)&date=eq.${today}&order=created_at.desc`;
-    if(me?.access_level==='user')q+=`&member_id=eq.${me.id}`;
-    const data=await req('GET',q,null,tok())||[];
-    loadStats(data);
-    const w=document.getElementById('twrap');if(!w)return;
-    w.innerHTML=data.length?buildTable(data,me?.access_level!=='user'):'<div class="empty">Nenhum lançamento hoje.</div>';
-  }catch(ex){console.error(ex);}
-}
-
-async function loadStats(todayD){
-  try{
-    const today=new Date(),ws=new Date(today);ws.setDate(today.getDate()-today.getDay()+1);
-    const th=(todayD||[]).reduce((a,e)=>a+(e.hours||0),0);
-    if(document.getElementById('st-t'))document.getElementById('st-t').textContent=fmtH(th);
-    if(!me)return;
-    const wD=await req('GET',`tt_time_entries?select=hours&date=gte.${ws.toISOString().split('T')[0]}&member_id=eq.${me.id}`,null,tok())||[];
-    if(document.getElementById('st-w'))document.getElementById('st-w').textContent=fmtH(wD.reduce((a,e)=>a+(e.hours||0),0));
-    const mD=await req('GET',`tt_time_entries?select=hours&date=gte.${fMonth}-01&member_id=eq.${me.id}`,null,tok())||[];
-    const mH=mD.reduce((a,e)=>a+(e.hours||0),0),cap=me.capacity_hours_month||140,pct=Math.min(100,Math.round(mH/cap*100));
-    if(document.getElementById('st-m'))document.getElementById('st-m').textContent=fmtH(mH);
-    if(document.getElementById('st-ms'))document.getElementById('st-ms').textContent=`de ${cap}h meta (${pct}%)`;
-    if(document.getElementById('st-mb'))document.getElementById('st-mb').style.width=pct+'%';
-  }catch{}
-}
-
-// PAGE: ENTRIES
-async function pgEntries(el){
-  const mc=myClients(),mm=myMembers();
-  const mOpts=buildMoOpts();
-  const mbOpts='<option value="">Todos</option>'+mm.map(m=>`<option value="${m.id}">${m.name.split(' ')[0]}</option>`).join('');
-  const clOpts='<option value="">Todos</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  const prOpts='<option value="">Todos</option>'+projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  el.innerHTML=`
-    <div class="filters">
-      <select class="fsel" id="f-mo" onchange="onFC()">${mOpts}</select>
-      <select class="fsel" id="f-mb" onchange="onFC()">${mbOpts}</select>
-      <select class="fsel" id="f-cl" onchange="onFC()">${clOpts}</select>
-      <select class="fsel" id="f-pr" onchange="onFC()">${prOpts}</select>
-      <button class="bsm" onclick="exportCsv()">↓ CSV</button>
-      <button class="bsmr" onclick="openNewEntry()" style="margin-left:auto">+ Novo</button>
-    </div>
-    <div id="etable"></div>`;
-  document.getElementById('f-mo').value=fMonth;
-  document.getElementById('f-mb').value=fMember;
-  document.getElementById('f-cl').value=fClient;
-  document.getElementById('f-pr').value=fProject;
-  await loadETable();
-}
-
-let allEntries=[];
-async function loadETable(){
-  const w=document.getElementById('etable');if(!w)return;
-  w.innerHTML='<div class="lc"><div class="spin"></div></div>';
-  try{
-    let q=`tt_time_entries?select=*,member:tt_members(id,name,team),client:tt_clients(id,name),project:tt_projects(id,name)&order=date.desc,created_at.desc`;
-    if(fMonth)q+=`&date=gte.${fMonth}-01&date=lte.${fMonth}-31`;
-    if(fMember)q+=`&member_id=eq.${fMember}`;
-    else if(me?.access_level==='user')q+=`&member_id=eq.${me.id}`;
-    if(fClient)q+=`&client_id=eq.${fClient}`;
-    if(fProject)q+=`&project_id=eq.${fProject}`;
-    // For account: filter to their members/clients
-    allEntries=await req('GET',q,null,tok())||[];
-    if(me?.access_level==='account'&&!fMember){
-      const mids=acMembers[me.id]||[];
-      allEntries=allEntries.filter(e=>mids.includes(e.member_id));
-    }
-    if(!allEntries.length){w.innerHTML='<div class="empty">Nenhum lançamento encontrado.</div>';return;}
-    const tot=allEntries.reduce((a,e)=>a+(e.hours||0),0);
-    w.innerHTML=`<div style="margin-bottom:10px;font-size:12px;color:var(--gray)">${allEntries.length} lançamentos · <strong style="color:var(--w)">${fmtH(tot)} total</strong></div>${buildTable(allEntries,true,true)}`;
-  }catch(ex){w.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;}
-}
-
-function onFC(){
-  fMonth=document.getElementById('f-mo')?.value||fMonth;
-  fMember=document.getElementById('f-mb')?.value||'';
-  fClient=document.getElementById('f-cl')?.value||'';
-  fProject=document.getElementById('f-pr')?.value||'';
-  loadETable();
-}
-
-function buildTable(data,showM,showProject){
-  return `<div class="tw"><table>
-    <thead><tr>
-      <th>Data</th><th>Descrição</th><th>Cliente</th>
-      ${showProject?'<th>Projeto</th>':''}
-      ${showM?'<th>Pessoa</th>':''}
-      <th>Horas</th><th></th>
-    </tr></thead>
-    <tbody>${data.map(e=>`<tr>
-      <td class="tg">${fmtD(e.date)}</td>
-      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
-      <td>${e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'—'}</td>
-      ${showProject?`<td class="tg">${e.project?.name||'—'}</td>`:''}
-      ${showM?`<td><span class="badge">${e.member?.name?.split(' ')[0]||'—'}</span></td>`:''}
-      <td class="tr">${fmtH(e.hours||0)}</td>
-      <td style="white-space:nowrap">
-        <button class="bsm" onclick="editEntry('${e.id}')" style="padding:4px 8px;font-size:11px;margin-right:4px">✎</button>
-        <button class="bsm" onclick="delEntry('${e.id}')" style="padding:4px 8px;font-size:11px;color:var(--gray2)">✕</button>
-      </td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
-}
-
-// PAGE: REPORTS
-async function pgRTeam(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rt-mo" onchange="pgRTeam(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rtc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rt-mo').value=fMonth;
-  const month=document.getElementById('rt-mo').value;
-  const data=await fetchReportData(month)||[];
-  const rc=document.getElementById('rtc');if(!rc)return;
-  const teams=['T1','T3','T4','Pack','PROD','ADM'],td={};
-  teams.forEach(t=>td[t]={h:0,mb:{}});
-  data.forEach(e=>{
-    const m=members.find(x=>x.id===e.member_id),team=m?.team||'ADM';
-    if(!td[team])td[team]={h:0,mb:{}};
-    td[team].h+=e.hours||0;
-    if(!td[team].mb[e.member_id])td[team].mb[e.member_id]={name:m?.name||'?',h:0};
-    td[team].mb[e.member_id].h+=e.hours||0;
-  });
-  rc.className='rgrid';
-  rc.innerHTML=teams.filter(t=>td[t].h>0).map(t=>{
-    const tv=td[t],mbs=Object.values(tv.mb).sort((a,b)=>b.h-a.h);
-    return `<div class="rc"><div class="rct">${t} — ${fmtH(tv.h)}</div>
-      ${mbs.map(m=>`<div class="rrow"><span class="rname">${m.name.split(' ').slice(0,2).join(' ')}</span><div class="rbarw"><div class="rbar" style="width:${Math.round(m.h/tv.h*100)}%"></div></div><span class="rhours">${fmtH(m.h)}</span></div>`).join('')}
-    </div>`;
-  }).join('');
-}
-
-async function pgRClient(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rc-mo" onchange="pgRClient(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rcc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rc-mo').value=fMonth;
-  const month=document.getElementById('rc-mo').value;
-  const data=await fetchReportData(month)||[];
-  const rc=document.getElementById('rcc');if(!rc)return;
-  const cd={};
-  data.forEach(e=>{
-    if(!cd[e.client_id]){const c=clients.find(c=>c.id===e.client_id);cd[e.client_id]={name:c?.name||'?',team:c?.team||'—',target:c?.target_hours_month||0,h:0,projs:{}};}
-    cd[e.client_id].h+=e.hours||0;
-    const pn=projects.find(p=>p.id===e.project_id)?.name||'Sem projeto';
-    if(!cd[e.client_id].projs[pn])cd[e.client_id].projs[pn]=0;
-    cd[e.client_id].projs[pn]+=e.hours||0;
-  });
-  const sorted=Object.values(cd).sort((a,b)=>b.h-a.h);
-  rc.className='';
-  rc.innerHTML=`<div class="tw"><table>
-    <thead><tr><th>Cliente</th><th>Time</th><th>Meta</th><th>Realizado</th><th>%</th><th>Top Projeto</th></tr></thead>
-    <tbody>${sorted.map(c=>{
-      const pct=c.target>0?Math.round(c.h/c.target*100):null;
-      const col=pct!=null?(pct>=100?'var(--green)':pct>=70?'var(--amber)':'var(--red)'):'var(--gray)';
-      const topProj=Object.entries(c.projs).sort((a,b)=>b[1]-a[1])[0];
-      return `<tr><td style="font-weight:600">${c.name}</td><td><span class="badge">${c.team}</span></td><td class="tg">${c.target?fmtH(c.target):'—'}</td><td class="tr">${fmtH(c.h)}</td><td style="color:${col};font-weight:700">${pct!=null?pct+'%':'—'}</td><td class="tg" style="font-size:11px">${topProj?topProj[0]:'—'}</td></tr>`;
-    }).join('')}</tbody>
-  </table></div>`;
-}
-
-async function pgRPerson(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rp-mo" onchange="pgRPerson(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rpc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rp-mo').value=fMonth;
-  const month=document.getElementById('rp-mo').value;
-  const data=await fetchReportData(month)||[];
-  const rc=document.getElementById('rpc');if(!rc)return;
-  const md={};
-  data.forEach(e=>{
-    if(!md[e.member_id]){const m=members.find(m=>m.id===e.member_id);md[e.member_id]={name:m?.name||'?',team:m?.team||'—',cap:m?.capacity_hours_month||140,h:0,cls:{}};}
-    md[e.member_id].h+=e.hours||0;
-    const cn=clients.find(c=>c.id===e.client_id)?.name||'?';
-    if(!md[e.member_id].cls[cn])md[e.member_id].cls[cn]=0;
-    md[e.member_id].cls[cn]+=e.hours||0;
-  });
-  const sorted=Object.values(md).sort((a,b)=>b.h-a.h);
-  rc.className='rgrid';
-  rc.innerHTML=sorted.map(m=>{
-    const pct=Math.min(100,Math.round(m.h/m.cap*100));
-    const bc=pct>=80?'var(--green)':'var(--red)';
-    const top=Object.entries(m.cls).sort((a,b)=>b[1]-a[1]).slice(0,4);
-    return `<div class="rc">
-      <div class="rct">${m.name.split(' ').slice(0,2).join(' ')} · <span style="color:var(--gray)">${m.team}</span></div>
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
-          <span style="color:var(--gray)">Utilização</span>
-          <span style="font-weight:700;color:${bc}">${fmtH(m.h)}/${m.cap}h <span style="color:var(--gray)">(${pct}%)</span></span>
+    <div style="max-width:560px;margin:0 auto">
+      <div class="card" style="text-align:center;padding:32px 16px">
+        <div class="timer-display ${S.timerRunning?'timer-on':''}" id="td">${S.timerRunning?'<span class="timer-dot"></span>':''}${fT(elapsed)}</div>
+        ${S.timerRunning?`<div style="margin-bottom:14px;font-size:12px;color:var(--txt2)">${cn(S.timerEntry.client_id)} ${S.timerEntry.task_category?'· '+S.timerEntry.task_category:''} ${S.timerEntry.description?'· '+S.timerEntry.description:''}</div>`:''}
+        <div style="display:flex;justify-content:center;gap:12px">
+          ${S.timerRunning?`<button class="timer-btn timer-no" onclick="stopTimer()">${I.stop}</button>`:`<button class="timer-btn timer-go" onclick="showStartModal()">${I.play}</button>`}
         </div>
-        <div class="sprog"><div class="sprogb" style="width:${pct}%;background:${bc}"></div></div>
       </div>
-      ${top.map(([cn,ch])=>`<div class="rrow"><span class="rname" style="font-size:12px">${cn}</span><div class="rbarw"><div class="rbar" style="width:${Math.round(ch/m.h*100)}%"></div></div><span class="rhours">${fmtH(ch)}</span></div>`).join('')}
-    </div>`;
-  }).join('');
-}
-
-async function fetchReportData(month){
-  let q=`tt_time_entries?select=*&order=date.desc`;
-  if(month)q+=`&date=gte.${month}-01&date=lte.${month}-31`;
-  if(me?.access_level==='account'){
-    const mids=(acMembers[me.id]||[]).join(',');
-    if(mids)q+=`&member_id=in.(${mids})`;
-  }
-  return req('GET',q,null,tok());
-}
-
-// ADMIN PAGES
-async function pgAdmMembers(el){
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
-    <div class="tw"><table>
-      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
-      <tbody>${members.map(m=>{
-        const rl={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user',executor:'rb-user',prod:'rb-user'};
-        const al=m.access_level||'user';
-        const fn=m.job_title&&!['executor','account','admin','user','prod'].includes(m.job_title)?m.job_title:'—';
-        return `<tr>
-          <td style="font-weight:600">${m.name}</td>
-          <td><span class="badge">${m.team||'—'}</span></td>
-          <td><span class="role-badge ${rc[al]||'rb-user'}">${rl[al]||'User'}</span></td>
-          <td class="tg">${fn}</td>
-          <td class="tg">${m.capacity_hours_month||140}h</td>
-          <td class="tg" style="font-size:11px">${m.email||'—'}</td>
-          <td style="white-space:nowrap">
-            <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
-            <button class="bsm" onclick="confirmDelMember('${m.id}','${m.name.replace(/'/g,\'')}')" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
-          </td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
-}
-
-async function pgAdmClients(el){
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${clients.length} clientes</span><button class="bsmr" onclick="openNewClient()">+ Novo</button></div>
-    <div class="tw"><table>
-      <thead><tr><th>Cliente</th><th>Time</th><th>Meta Mensal</th><th>Projetos</th><th></th></tr></thead>
-      <tbody>${clients.map(c=>{
-        const cprojs=projects.filter(p=>p.client_id===c.id);
-        return `<tr>
-          <td style="font-weight:600">${c.name}</td>
-          <td><span class="badge">${c.team||'—'}</span></td>
-          <td class="tg">${c.target_hours_month?fmtH(c.target_hours_month):'—'}</td>
-          <td class="tg">${cprojs.length} projetos</td>
-          <td><button class="bsm" onclick="editClient('${c.id}')" style="padding:4px 8px;font-size:11px">✎</button></td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
-}
-
-async function pgAdmProjects(el){
-  const byClient={};
-  clients.forEach(c=>byClient[c.id]={name:c.name,projs:[]});
-  projects.forEach(p=>{if(byClient[p.client_id])byClient[p.client_id].projs.push(p);});
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${projects.length} projetos</span><button class="bsmr" onclick="openNewProject()">+ Novo Projeto</button></div>
-    <div class="rgrid">
-      ${Object.values(byClient).filter(c=>c.projs.length>0).map(c=>`
-        <div class="rc">
-          <div class="rct">${c.name}</div>
-          ${c.projs.map(p=>`
-            <div class="rrow" style="justify-content:space-between">
-              <span style="font-size:13px;font-weight:500">${p.name}</span>
-              <button class="bsm" onclick="delProject('${p.id}')" style="padding:3px 7px;font-size:11px;color:var(--gray2)">✕</button>
-            </div>`).join('')}
-        </div>`).join('')}
-      ${Object.values(byClient).filter(c=>c.projs.length===0).length>0?`
-        <div class="rc">
-          <div class="rct" style="color:var(--gray2)">Clientes sem projetos</div>
-          ${Object.values(byClient).filter(c=>c.projs.length===0).map(c=>`<div class="rrow"><span class="tg" style="font-size:12px">${c.name}</span></div>`).join('')}
-        </div>`:''}
-    </div>`;
-}
-
-async function pgAdmAccounts(el){
-  const accounts=members.filter(m=>m.access_level==='account');
-  if(!accounts.length){el.innerHTML='<div class="empty">Nenhum usuário com nível "Account" cadastrado.</div>';return;}
-
-  // Load all associations
-  const [allAM,allAC]=await Promise.all([
-    req('GET','tt_account_members?select=*',null,tok()),
-    req('GET','tt_account_clients?select=*',null,tok())
-  ]);
-
-  el.innerHTML=`
-    <p class="section-info">Configure quais <strong>pessoas</strong> e <strong>clientes</strong> cada Account consegue visualizar e gerenciar.</p>
-    <div class="rgrid">
-      ${accounts.map(acc=>{
-        const amids=(allAM||[]).filter(x=>x.account_id===acc.id).map(x=>x.member_id);
-        const acids=(allAC||[]).filter(x=>x.account_id===acc.id).map(x=>x.client_id);
-        const amNames=members.filter(m=>amids.includes(m.id)).map(m=>m.name.split(' ')[0]);
-        const acNames=clients.filter(c=>acids.includes(c.id)).map(c=>c.name);
-        return `<div class="rc">
-          <div class="rct" style="font-size:12px">${acc.name} <span class="role-badge rb-account">Account</span></div>
-          <div style="margin-bottom:12px">
-            <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pessoas (${amids.length})</div>
-            <div class="assoc-list">
-              ${amNames.length?amNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('member','${acc.id}','${amids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhuma</span>'}
-            </div>
-            <div style="margin-top:8px;display:flex;gap:6px">
-              <select class="fsel" id="add-mb-${acc.id}" style="flex:1;font-size:11px">
-                <option value="">+ Adicionar pessoa</option>
-                ${members.filter(m=>!amids.includes(m.id)&&m.id!==acc.id).map(m=>`<option value="${m.id}">${m.name.split(' ').slice(0,2).join(' ')}</option>`).join('')}
-              </select>
-              <button class="bsmg" onclick="addAssoc('member','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button>
-            </div>
+      <div style="margin-top:20px">
+        <div class="sh"><h2>Lançamento rápido</h2></div>
+        <div class="card" style="padding:16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label>Cliente</label><select class="fc" id="qCl"><option value="">Selecione</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+            <div class="fg"><label>Categoria</label><select class="fc" id="qCa"><option value="">Selecione</option>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Clientes (${acids.length})</div>
-            <div class="assoc-list">
-              ${acNames.length?acNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('client','${acc.id}','${acids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhum</span>'}
-            </div>
-            <div style="margin-top:8px;display:flex;gap:6px">
-              <select class="fsel" id="add-cl-${acc.id}" style="flex:1;font-size:11px">
-                <option value="">+ Adicionar cliente</option>
-                ${clients.filter(c=>!acids.includes(c.id)).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-              </select>
-              <button class="bsmg" onclick="addAssoc('client','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button>
-            </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px">
+            <div class="fg"><label>Data</label><input type="date" class="fc" id="qDt" value="${today()}"></div>
+            <div class="fg"><label>Horas</label><input type="number" class="fc" id="qHr" step="0.25" min="0" placeholder="2.5"></div>
+            <div class="fg"><label>Descrição</label><input class="fc" id="qDs" placeholder="Opcional"></div>
           </div>
-        </div>`;
-      }).join('')}
+          <button class="btn btn-r" onclick="quickEntry()" style="width:100%;justify-content:center">${I.plus} Lançar</button>
+        </div>
+      </div>
+    </div>`;
+  if(S.timerRunning)startTick(elapsed);
+}
+
+function startTick(sec){
+  if(S.timerInterval)clearInterval(S.timerInterval);
+  let s=sec;
+  S.timerInterval=setInterval(()=>{s++;const d=document.getElementById('td');if(d)d.innerHTML=`<span class="timer-dot"></span>${fT(s)}`;else clearInterval(S.timerInterval)},1000);
+}
+
+function showStartModal(){
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="mo-c">
+    <h3>Iniciar Timer</h3>
+    <div class="fg"><label>Cliente</label><select class="fc" id="tmCl"><option value="">Selecione</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+    <div class="fg"><label>Categoria</label><select class="fc" id="tmCa"><option value="">Selecione</option>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="fg"><label>Descrição</label><input class="fc" id="tmDs" placeholder="O que você está fazendo?"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">Cancelar</button><button class="btn btn-r" onclick="startTimer()">Iniciar</button></div>
+  </div>`;m.classList.add('show');
+}
+
+async function startTimer(){
+  const cl=document.getElementById('tmCl').value,ca=document.getElementById('tmCa').value,ds=document.getElementById('tmDs').value;
+  if(!cl){toast('Selecione um cliente','e');return}
+  try{
+    const r=await loadRunning();for(const x of r.filter(e=>e.member_id===S.currentMember.id))await api('PATCH',`tt_time_entries?id=eq.${x.id}`,{is_running:false,ended_at:new Date().toISOString()});
+    const e=await api('POST','tt_time_entries',{member_id:S.currentMember.id,client_id:cl,task_category:ca||null,description:ds||null,started_at:new Date().toISOString(),is_running:true,is_manual:false});
+    S.timerRunning=true;S.timerEntry=e[0];closeModal();renderPage();toast('Timer iniciado','s');
+  }catch(e){toast('Erro: '+e.message,'e')}
+}
+
+async function stopTimer(){
+  if(!S.timerEntry)return;
+  try{
+    const now=new Date(),started=new Date(S.timerEntry.started_at),mins=(now-started)/60000;
+    await api('PATCH',`tt_time_entries?id=eq.${S.timerEntry.id}`,{is_running:false,ended_at:now.toISOString(),duration_minutes:Math.round(mins),hours:Math.round(mins/6)/10,date:started.toISOString().substring(0,10)});
+    if(S.timerInterval)clearInterval(S.timerInterval);S.timerRunning=false;S.timerEntry=null;renderPage();toast(`Timer parado — ${fD(Math.round(mins))}`,'s');
+  }catch(e){toast('Erro: '+e.message,'e')}
+}
+
+async function quickEntry(){
+  const cl=document.getElementById('qCl').value,ca=document.getElementById('qCa').value,dt=document.getElementById('qDt').value,hr=parseFloat(document.getElementById('qHr').value),ds=document.getElementById('qDs').value;
+  if(!cl||!dt||!hr||hr<=0){toast('Preencha cliente, data e horas','e');return}
+  try{
+    const sa=`${dt}T09:00:00`,mins=Math.round(hr*60);
+    await api('POST','tt_time_entries',{member_id:S.currentMember.id,client_id:cl,task_category:ca||null,description:ds||null,started_at:sa,ended_at:new Date(new Date(sa).getTime()+mins*60000).toISOString(),duration_minutes:mins,hours:hr,date:dt,is_running:false,is_manual:true});
+    toast(`${hr}h lançadas`,'s');document.getElementById('qHr').value='';document.getElementById('qDs').value='';
+  }catch(e){toast('Erro: '+e.message,'e')}
+}
+
+// ─── ENTRIES ───
+function pgEntries(el){
+  const f=filterEntries(S.entries);
+  const tot=f.reduce((s,e)=>s+(e.hours||e.duration_minutes/60||0),0);
+  el.innerHTML=`
+    ${dateFilterBar()}
+    ${entityFilters()}
+    <div class="cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card"><div class="cl">Total</div><div class="cv">${fH(tot)}</div><div class="cs">${f.length} lançamentos</div></div>
+      <div class="card card-b"><div class="cl">Período</div><div class="cv" style="font-size:16px">${RANGE_LABELS[S.dateRange]}</div><div class="cs">${getDateRange(S.dateRange).join(' → ')}</div></div>
+      <div class="card card-g"><div class="cl">Média/dia útil</div><div class="cv">${fH(tot/20)}</div></div>
+    </div>
+    <div class="tbl"><div class="tbl-h"><h3>Lançamentos</h3><button class="btn btn-s btn-sm" onclick="exportCSV()">${I.dl} CSV</button></div>
+    <div class="tbl-r"><table><thead><tr><th>Data</th>${isA()?'<th>Pessoa</th>':''}<th>Cliente</th><th>Categoria</th><th>Descrição</th><th style="text-align:right">Horas</th><th></th></tr></thead>
+    <tbody>${f.slice(0,200).map(e=>`<tr>
+      <td>${(e.date||e.started_at?.substring(0,10)||'—')}</td>
+      ${isA()?`<td style="white-space:nowrap">${mn(e.member_id).split(' ').slice(0,2).join(' ')}</td>`:''}
+      <td>${cn(e.client_id)}</td>
+      <td>${e.task_category?`<span style="color:${CC[e.task_category]||'#999'}">${e.task_category}</span>`:'—'}</td>
+      <td style="color:var(--txt2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
+      <td style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums">${fH(e.hours||e.duration_minutes/60||0)}</td>
+      <td><button class="btn-i" onclick="delEntry('${e.id}')">${I.trash}</button></td>
+    </tr>`).join('')}
+    ${f.length===0?`<tr><td colspan="7" class="empty">Nenhum lançamento</td></tr>`:''}
+    </tbody></table></div></div>`;
+}
+
+async function delEntry(id){if(!confirm('Excluir?'))return;try{await api('DELETE',`tt_time_entries?id=eq.${id}`);toast('Excluído','s');renderPage()}catch(e){toast(e.message,'e')}}
+
+function exportCSV(){
+  const f=filterEntries(S.entries);
+  const rows=[['Data','Pessoa','Time','Cliente','Categoria','Descrição','Horas']];
+  f.forEach(e=>rows.push([(e.date||e.started_at?.substring(0,10)||''),mn(e.member_id),mt(e.member_id),cn(e.client_id),e.task_category||'',e.description||'',(e.hours||e.duration_minutes/60||0).toFixed(2)]));
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`tgt-time-export.csv`;a.click();
+}
+
+// ─── DASH: MY PANEL ───
+function pgDashMe(el){
+  const myId=S.currentMember.id;
+  const my=S.entries.filter(e=>e.member_id===myId);
+  const tot=my.reduce((s,e)=>s+(e.hours||e.duration_minutes/60||0),0);
+  const cap=parseFloat(S.currentMember.capacity_hours_month)||parseFloat(S.currentMember.capacity_hours)||140;
+  const pct=cap>0?(tot/cap)*100:0;
+  
+  const byClient={};my.forEach(e=>{const c=cn(e.client_id);byClient[c]=(byClient[c]||0)+(e.hours||e.duration_minutes/60||0)});
+  const sc=Object.entries(byClient).sort((a,b)=>b[1]-a[1]);const mx=sc[0]?.[1]||1;
+  const byCat={};my.forEach(e=>{const c=e.task_category||'Sem categoria';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
+  const sca=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);const mxc=sca[0]?.[1]||1;
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    <div class="cards">
+      <div class="card"><div class="cl">Horas</div><div class="cv">${fH(tot)}</div><div class="cs">${my.length} lançamentos</div></div>
+      <div class="card card-g"><div class="cl">Capacidade</div><div class="cv">${pct.toFixed(0)}%</div><div class="pb"><div class="pb-f" style="width:${Math.min(pct,100)}%;background:${pct>90?'var(--prod)':pct>60?'var(--t1)':'var(--pack)'}"></div></div><div class="cs">${fH(tot)} / ${fH(cap)}</div></div>
+      <div class="card card-b"><div class="cl">Clientes</div><div class="cv">${sc.length}</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="tbl"><div class="tbl-h"><h3>Por Cliente</h3></div><div style="padding:12px">${sc.map(([n,h])=>`<div class="cb"><div class="cb-l">${n}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mx)*100}%;background:var(--red)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sc.length===0?'<div class="empty">Sem dados</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Por Categoria</h3></div><div style="padding:12px">${sca.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxc)*100}%;background:${CC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sca.length===0?'<div class="empty">Sem dados</div>':''}</div></div>
     </div>`;
 }
 
-async function addAssoc(type,accountId){
-  const selId=type==='member'?`add-mb-${accountId}`:`add-cl-${accountId}`;
-  const sel=document.getElementById(selId);
-  if(!sel||!sel.value)return;
-  const val=sel.value;
+// ─── DASH: CLIENT ───
+function pgDashClient(el){
+  const f=filterEntries(S.entries);
+  const cd={};
+  S.clients.forEach(c=>{cd[c.id]={name:c.name,team:c.team,target:parseFloat(c.target_hours_month)||parseFloat(c.target_hours)||0,fee:parseFloat(c.fee_monthly)||0,hours:0}});
+  f.forEach(e=>{if(cd[e.client_id])cd[e.client_id].hours+=(e.hours||e.duration_minutes/60||0)});
+  const cls=Object.values(cd).filter(c=>c.hours>0||c.target>0).sort((a,b)=>b.hours-a.hours);
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    ${entityFilters({client:false})}
+    <div class="tbl"><div class="tbl-h"><h3>Consumo vs Meta</h3></div>
+    <div class="tbl-r"><table><thead><tr><th>Cliente</th><th>Time</th><th style="text-align:right">Meta</th><th style="text-align:right">Realizado</th><th style="text-align:right">%</th><th style="width:160px">Progresso</th></tr></thead>
+    <tbody>${cls.map(c=>{
+      const p=c.target>0?(c.hours/c.target)*100:0;
+      const color=p>110?'var(--red)':p>90?'var(--pack)':'var(--prod)';
+      return`<tr><td style="font-weight:600">${c.name}</td><td>${TB(c.team)}</td><td style="text-align:right">${c.target>0?fH(c.target):'—'}</td><td style="text-align:right;font-weight:700">${fH(c.hours)}</td><td style="text-align:right;color:${color};font-weight:700">${c.target>0?p.toFixed(0)+'%':'—'}</td><td><div class="pb"><div class="pb-f" style="width:${Math.min(p,100)}%;background:${color}"></div></div></td></tr>`}).join('')}
+    ${cls.length===0?`<tr><td colspan="6" class="empty">Sem dados</td></tr>`:''}
+    </tbody></table></div></div>`;
+}
+
+// ─── DASH: TEAM ───
+function pgDashTeam(el){
+  if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
+  const f=filterEntries(S.entries);
+  const teams={};
+  f.forEach(e=>{const t=mt(e.member_id)||'?';const h=e.hours||e.duration_minutes/60||0;if(!teams[t])teams[t]={hours:0,members:new Set()};teams[t].hours+=h;teams[t].members.add(e.member_id)});
+  const tot=f.reduce((s,e)=>s+(e.hours||e.duration_minutes/60||0),0);
+  const teamCap={};S.members.forEach(m=>{if(!teamCap[m.team])teamCap[m.team]=0;teamCap[m.team]+=(parseFloat(m.capacity_hours_month)||parseFloat(m.capacity_hours)||140)});
+  const sorted=Object.entries(teams).sort((a,b)=>b[1].hours-a[1].hours);
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    ${entityFilters({team:false,member:false})}
+    <div class="cards" style="grid-template-columns:repeat(2,1fr)">
+      <div class="card"><div class="cl">Total Geral</div><div class="cv">${fH(tot)}</div><div class="cs">${f.length} lançamentos</div></div>
+      <div class="card card-g"><div class="cl">Utilização</div><div class="cv">${(Object.values(teamCap).reduce((s,v)=>s+v,0)>0?(tot/Object.values(teamCap).reduce((s,v)=>s+v,0)*100).toFixed(0):0)}%</div></div>
+    </div>
+    <div class="tbl"><div class="tbl-h"><h3>Horas por Time</h3></div>
+    <div style="padding:14px">
+      ${sorted.map(([t,d])=>{
+        const cap=teamCap[t]||1;const pct=(d.hours/cap)*100;
+        return`<div class="cb"><div class="cb-l">${TB(t)}</div><div class="cb-t"><div class="cb-f" style="width:${Math.min((d.hours/(sorted[0][1].hours||1))*100,100)}%;background:${TC[t]||'#666'}"><span class="cb-v">${fH(d.hours)} (${d.members.size}p · ${pct.toFixed(0)}%)</span></div></div></div>`}).join('')}
+    </div></div>
+    
+    <div class="tbl"><div class="tbl-h"><h3>Detalhamento</h3></div>
+    <div class="tbl-r"><table><thead><tr><th>Time</th><th style="text-align:right">Horas</th><th style="text-align:right">Capacidade</th><th style="text-align:right">Utilização</th><th style="text-align:right">Pessoas</th><th style="width:140px">Progresso</th></tr></thead>
+    <tbody>${sorted.map(([t,d])=>{
+      const cap=teamCap[t]||0;const pct=cap>0?(d.hours/cap)*100:0;const color=pct>100?'var(--red)':pct>80?'var(--prod)':pct>50?'var(--t1)':'var(--pack)';
+      return`<tr><td>${TB(t)}</td><td style="text-align:right;font-weight:700">${fH(d.hours)}</td><td style="text-align:right">${fH(cap)}</td><td style="text-align:right;color:${color};font-weight:700">${pct.toFixed(0)}%</td><td style="text-align:right">${d.members.size}</td><td><div class="pb"><div class="pb-f" style="width:${Math.min(pct,100)}%;background:${color}"></div></div></td></tr>`}).join('')}</tbody></table></div></div>`;
+}
+
+// ─── DASH: PEOPLE ───
+async function pgDashPeople(el){
+  if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
+  const f=S.entries;
+  let running=[];try{running=await loadRunning()}catch(e){}
+  
+  const mu={};
+  S.members.forEach(m=>{
+    if(m.team==='ADM'&&m.name!=='Joao Butuem')return;
+    mu[m.id]={name:m.name,team:m.team,job:m.job_title,cap:parseFloat(m.capacity_hours_month)||parseFloat(m.capacity_hours)||140,hours:0,cost:parseFloat(m.hourly_cost)||0};
+  });
+  f.forEach(e=>{if(mu[e.member_id])mu[e.member_id].hours+=(e.hours||e.duration_minutes/60||0)});
+  let arr=Object.entries(mu).map(([id,d])=>({id,...d,pct:d.cap>0?(d.hours/d.cap)*100:0}));
+  if(S.fTeam)arr=arr.filter(m=>m.team===S.fTeam);
+  arr.sort((a,b)=>b.pct-a.pct);
+  
+  const alerts=arr.filter(m=>m.pct>100||m.pct<30);
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    <div class="filters">
+      <select class="fc" onchange="S.fTeam=this.value;renderPage()" style="width:auto;min-width:120px">
+        <option value="">Todos os times</option>
+        ${['T1','T3','T4','PACK','PROD'].map(t=>`<option value="${t}" ${S.fTeam===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+    </div>
+    
+    <div class="cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card"><div class="cl">Pessoas</div><div class="cv">${arr.length}</div></div>
+      <div class="card card-g"><div class="cl">${I.timer} Em execução</div><div class="cv">${running.length}</div><div class="cs">${running.map(e=>mn(e.member_id).split(' ')[0]).join(', ')||'ninguém'}</div></div>
+      <div class="card" style="${alerts.length>0?'border-color:var(--red)':''}"><div class="cl">${I.alert} Alertas</div><div class="cv">${alerts.length}</div><div class="cs">${alerts.filter(m=>m.pct>100).length} sobrecarga · ${alerts.filter(m=>m.pct<30).length} ocioso</div></div>
+    </div>
+
+    <div class="util-grid">
+      ${arr.map(m=>{
+        const color=m.pct>100?'var(--red)':m.pct>80?'var(--prod)':m.pct>50?'var(--t1)':'var(--pack)';
+        return`<div class="uc"><div class="nm">${m.name.split(' ').slice(0,2).join(' ')}</div><div class="mt">${TB(m.team)} ${m.job||''}</div><div class="sr"><span>Horas</span><span style="font-weight:700">${fH(m.hours)} / ${fH(m.cap)}</span></div><div class="pb"><div class="pb-f" style="width:${Math.min(m.pct,100)}%;background:${color}"></div></div><div style="text-align:right;font-size:11px;font-weight:700;color:${color};margin-top:3px">${m.pct.toFixed(0)}%</div></div>`}).join('')}
+    </div>`;
+}
+
+// ─── DASH: FINANCIAL ───
+function pgDashFin(el){
+  if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
+  const f=filterEntries(S.entries);
+  const cf={};
+  S.clients.forEach(c=>{cf[c.id]={name:c.name,team:c.team,fee:parseFloat(c.fee_monthly)||0,hours:0,cost:0}});
+  f.forEach(e=>{if(!cf[e.client_id])return;const h=e.hours||e.duration_minutes/60||0;const m=gm(e.member_id);cf[e.client_id].hours+=h;cf[e.client_id].cost+=h*(parseFloat(m?.hourly_cost)||0)});
+  const cls=Object.values(cf).filter(c=>c.hours>0||c.fee>0).sort((a,b)=>b.fee-a.fee);
+  const tRev=cls.reduce((s,c)=>s+c.fee,0),tCost=cls.reduce((s,c)=>s+c.cost,0),tMar=tRev-tCost;
+  const tHrs=cls.reduce((s,c)=>s+c.hours,0);
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    ${entityFilters({cat:false})}
+    <div class="cards" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card card-g"><div class="cl">Receita</div><div class="cv">R$ ${tRev.toLocaleString('pt-BR',{maximumFractionDigits:0})}</div></div>
+      <div class="card"><div class="cl">Custo</div><div class="cv">R$ ${tCost.toLocaleString('pt-BR',{maximumFractionDigits:0})}</div></div>
+      <div class="card card-b"><div class="cl">Margem</div><div class="cv" style="color:${tMar>=0?'var(--prod)':'var(--red)'}">R$ ${tMar.toLocaleString('pt-BR',{maximumFractionDigits:0})}</div><div class="cs">${tRev>0?(tMar/tRev*100).toFixed(0):0}%</div></div>
+      <div class="card"><div class="cl">Rate efetivo</div><div class="cv">R$ ${tHrs>0?(tRev/tHrs).toFixed(0):'0'}</div><div class="cs">custo R$ ${tHrs>0?(tCost/tHrs).toFixed(0):'0'}/h</div></div>
+    </div>
+    <div class="tbl"><div class="tbl-h"><h3>P&L por Cliente</h3></div>
+    <div class="tbl-r"><table><thead><tr><th>Cliente</th><th>Time</th><th style="text-align:right">Fee</th><th style="text-align:right">Horas</th><th style="text-align:right">Custo</th><th style="text-align:right">Margem</th><th style="text-align:right">%</th><th style="text-align:right">R$/h</th></tr></thead>
+    <tbody>${cls.map(c=>{
+      const m=c.fee-c.cost,mp=c.fee>0?(m/c.fee)*100:(c.cost>0?-100:0),rate=c.hours>0?c.fee/c.hours:0;
+      return`<tr><td style="font-weight:600">${c.name}</td><td>${TB(c.team)}</td><td style="text-align:right">${c.fee>0?'R$ '+c.fee.toLocaleString('pt-BR'):'—'}</td><td style="text-align:right">${fH(c.hours)}</td><td style="text-align:right">R$ ${c.cost.toLocaleString('pt-BR',{maximumFractionDigits:0})}</td><td style="text-align:right;font-weight:700;color:${m>=0?'var(--prod)':'var(--red)'}">R$ ${m.toLocaleString('pt-BR',{maximumFractionDigits:0})}</td><td style="text-align:right;color:${mp>=0?'var(--prod)':'var(--red)'}">${mp.toFixed(0)}%</td><td style="text-align:right;color:var(--txt2)">R$ ${rate.toFixed(0)}</td></tr>`}).join('')}
+    <tr style="font-weight:800;background:var(--bg3)"><td colspan="2">TOTAL</td><td style="text-align:right">R$ ${tRev.toLocaleString('pt-BR')}</td><td style="text-align:right">${fH(tHrs)}</td><td style="text-align:right">R$ ${tCost.toLocaleString('pt-BR',{maximumFractionDigits:0})}</td><td style="text-align:right;color:${tMar>=0?'var(--prod)':'var(--red)'}">R$ ${tMar.toLocaleString('pt-BR',{maximumFractionDigits:0})}</td><td style="text-align:right">${tRev>0?(tMar/tRev*100).toFixed(0):0}%</td><td style="text-align:right">R$ ${tHrs>0?(tRev/tHrs).toFixed(0):'0'}</td></tr>
+    </tbody></table></div></div>`;
+}
+
+// ─── ADMIN: MEMBERS ───
+function pgAdmMembers(el){
+  if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
+  el.innerHTML=`
+    <div class="tbl"><div class="tbl-h"><h3>Equipe (${S.members.length})</h3><button class="btn btn-r btn-sm" onclick="showMemberModal()">${I.plus} Adicionar</button></div>
+    <div class="tbl-r"><table><thead><tr><th>Nome</th><th>Time</th><th>Função</th><th>Nível</th><th style="text-align:right">Cap</th><th style="text-align:right">R$/h</th><th></th></tr></thead>
+    <tbody>${S.members.map(m=>`<tr>
+      <td style="font-weight:600">${m.name}</td><td>${TB(m.team)}</td><td>${m.job_title||'—'}</td>
+      <td><span class="bg ${m.access_level==='admin'?'bg-adm':m.access_level==='account'?'bg-t1':'bg-prod'}">${m.access_level||'user'}</span></td>
+      <td style="text-align:right">${m.capacity_hours_month||m.capacity_hours||'—'}</td>
+      <td style="text-align:right">${parseFloat(m.hourly_cost||0).toFixed(0)}</td>
+      <td><button class="btn-i" onclick="showMemberModal('${m.id}')">${I.edit}</button></td>
+    </tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function showMemberModal(id){
+  const m=id?S.members.find(x=>x.id===id):{};
+  const modal=document.getElementById('modal');
+  modal.innerHTML=`<div class="mo-c">
+    <h3>${id?'Editar':'Adicionar'} Pessoa</h3>
+    <div class="fg"><label>Nome</label><input class="fc" id="mN" value="${m.name||''}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label>Time</label><select class="fc" id="mT">${['T1','T3','T4','PACK','PROD','ADM'].map(t=>`<option value="${t}" ${m.team===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Função</label><input class="fc" id="mJ" value="${m.job_title||''}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="fg"><label>Cap h/mês</label><input type="number" class="fc" id="mC" value="${m.capacity_hours_month||m.capacity_hours||140}"></div>
+      <div class="fg"><label>Custo/h</label><input type="number" class="fc" id="mH" value="${m.hourly_cost||0}"></div>
+      <div class="fg"><label>Nível</label><select class="fc" id="mL">${['user','account','admin'].map(l=>`<option value="${l}" ${m.access_level===l?'selected':''}>${l}</option>`).join('')}</select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label>E-mail</label><input class="fc" id="mE" value="${m.email||''}"></div>
+      <div class="fg"><label>Senha</label><input class="fc" id="mP" value="${m.login_password||'TGTtime2026'}"></div>
+    </div>
+    <div class="fg"><label>Monday User ID</label><input class="fc" id="mM" value="${m.monday_user_id||''}"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-r" onclick="saveMember('${id||''}')">${id?'Salvar':'Adicionar'}</button>
+    </div>
+  </div>`;modal.classList.add('show');
+}
+
+async function saveMember(id){
+  const d={name:document.getElementById('mN').value,team:document.getElementById('mT').value,job_title:document.getElementById('mJ').value,capacity_hours_month:parseFloat(document.getElementById('mC').value)||140,hourly_cost:parseFloat(document.getElementById('mH').value)||0,access_level:document.getElementById('mL').value,email:document.getElementById('mE').value||null,login_password:document.getElementById('mP').value||'TGTtime2026',monday_user_id:document.getElementById('mM').value||null,is_active:true,active:true};
+  if(!d.name){toast('Nome obrigatório','e');return}
   try{
-    if(type==='member')await req('POST','tt_account_members',{account_id:accountId,member_id:val},tok());
-    else await req('POST','tt_account_clients',{account_id:accountId,client_id:val},tok());
-    toast('Associação adicionada','success');
-    await renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+    if(id)await api('PATCH',`tt_members?id=eq.${id}`,d);else await api('POST','tt_members',d);
+    toast(id?'Salvo':'Adicionado','s');closeModal();await loadAll();renderPage();
+  }catch(e){toast(e.message,'e')}
 }
 
-async function removeAssoc(type,accountId,itemId){
+// ─── ADMIN: CLIENTS ───
+function pgAdmClients(el){
+  if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
+  el.innerHTML=`
+    <div class="tbl"><div class="tbl-h"><h3>Clientes (${S.clients.length})</h3><button class="btn btn-r btn-sm" onclick="showClientModal()">${I.plus} Adicionar</button></div>
+    <div class="tbl-r"><table><thead><tr><th>Nome</th><th>Time</th><th style="text-align:right">Meta h/mês</th><th style="text-align:right">Fee mensal</th><th></th></tr></thead>
+    <tbody>${S.clients.map(c=>`<tr>
+      <td style="font-weight:600">${c.name}</td><td>${TB(c.team)}</td>
+      <td style="text-align:right">${c.target_hours_month||c.target_hours||'—'}</td>
+      <td style="text-align:right">${c.fee_monthly?'R$ '+parseFloat(c.fee_monthly).toLocaleString('pt-BR'):'—'}</td>
+      <td><button class="btn-i" onclick="showClientModal('${c.id}')">${I.edit}</button></td>
+    </tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function showClientModal(id){
+  const c=id?S.clients.find(x=>x.id===id):{};
+  const modal=document.getElementById('modal');
+  modal.innerHTML=`<div class="mo-c">
+    <h3>${id?'Editar':'Adicionar'} Cliente</h3>
+    <div class="fg"><label>Nome</label><input class="fc" id="cN" value="${c.name||''}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="fg"><label>Time (opcional)</label>
+        <select class="fc" id="cT">
+          <option value="">Sem time</option>
+          ${['T1','T3','T4','PACK','PROD','ADM'].map(t=>`<option value="${t}" ${c.team===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label>Meta h/mês</label><input type="number" class="fc" id="cH" value="${c.target_hours_month||c.target_hours||''}"></div>
+      <div class="fg"><label>Fee mensal (R$)</label><input type="number" class="fc" id="cF" value="${c.fee_monthly||''}"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-r" onclick="saveClient('${id||''}')">${id?'Salvar':'Adicionar'}</button>
+    </div>
+  </div>`;modal.classList.add('show');
+}
+
+async function saveClient(id){
+  const d={name:document.getElementById('cN').value,team:document.getElementById('cT').value||null,target_hours_month:parseFloat(document.getElementById('cH').value)||null,fee_monthly:parseFloat(document.getElementById('cF').value)||null,is_active:true,active:true};
+  if(!d.name){toast('Nome obrigatório','e');return}
   try{
-    if(type==='member')await req('DELETE',`tt_account_members?account_id=eq.${accountId}&member_id=eq.${itemId}`,null,tok());
-    else await req('DELETE',`tt_account_clients?account_id=eq.${accountId}&client_id=eq.${itemId}`,null,tok());
-    toast('Removido','success');
-    await renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+    if(id)await api('PATCH',`tt_clients?id=eq.${id}`,d);else await api('POST','tt_clients',d);
+    toast(id?'Salvo':'Adicionado','s');closeModal();await loadAll();renderPage();
+  }catch(e){toast(e.message,'e')}
 }
 
-// ENTRY MODAL
-function openNewEntry(){
-  editId=null;
-  document.getElementById('m-entry-t').textContent='Novo Lançamento';
-  document.getElementById('e-desc').value='';
-  document.getElementById('e-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('e-hours').value='';
-  const mc=myClients(),mm=myMembers();
-  document.getElementById('e-client').innerHTML='<option value="">Selecionar</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('e-project').innerHTML='<option value="">Sem projeto</option>';
-  const mw=document.getElementById('e-member-wrap');
-  if(me?.access_level==='user'){mw.style.display='none';}
-  else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');if(me)document.getElementById('e-member').value=me.id;}
-  openM('m-entry');
+// ─── LOGIN ───
+function renderLogin(){
+  document.getElementById('app').innerHTML=`
+    <div class="lp">
+      <div class="lb">
+        <div class="logo-big">${LG}</div>
+        <div class="tl">Time Tracker</div>
+        <div class="fg"><label>E-mail</label><input type="email" class="fc" id="lE" placeholder="seu@tgtstudio.com.br"></div>
+        <div class="fg"><label>Senha</label><input type="password" class="fc" id="lP" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn btn-r" onclick="doLogin()" style="width:100%;justify-content:center;margin-top:6px;padding:10px">Entrar</button>
+        <div id="lErr" style="color:var(--red);font-size:11px;margin-top:10px"></div>
+      </div>
+    </div>`;
 }
 
-function editEntry(id){
-  const e=allEntries.find(x=>x.id===id)||(curPage==='timer'?null:null);
-  if(!e)return;
-  editId=id;
-  document.getElementById('m-entry-t').textContent='Editar Lançamento';
-  document.getElementById('e-desc').value=e.description||'';
-  document.getElementById('e-date').value=e.date||'';
-  document.getElementById('e-hours').value=e.hours||'';
-  const mc=myClients(),mm=myMembers();
-  document.getElementById('e-client').innerHTML='<option value="">Selecionar</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('e-client').value=e.client_id||'';
-  loadProjectsForEntry();
-  setTimeout(()=>{document.getElementById('e-project').value=e.project_id||'';},100);
-  const mw=document.getElementById('e-member-wrap');
-  if(me?.access_level==='user'){mw.style.display='none';}
-  else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');document.getElementById('e-member').value=e.member_id||'';}
-  openM('m-entry');
-}
-
-function loadProjectsForEntry(){
-  const cid=document.getElementById('e-client')?.value;
-  const ps=document.getElementById('e-project');if(!ps)return;
-  const projs=myProjects(cid);
-  ps.innerHTML='<option value="">Sem projeto</option>'+projs.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-}
-
-async function saveEntry(){
-  const btn=document.getElementById('e-save');
-  const memberId=me?.access_level==='user'?me.id:document.getElementById('e-member').value;
-  const p={
-    description:document.getElementById('e-desc').value.trim(),
-    date:document.getElementById('e-date').value,
-    hours:parseFloat(document.getElementById('e-hours').value),
-    client_id:document.getElementById('e-client').value,
-    project_id:document.getElementById('e-project').value||null,
-    member_id:memberId
-  };
-  if(!p.description||!p.date||!p.hours||!p.client_id||!p.member_id){toast('Preencha todos os campos obrigatórios','error');return;}
-  btn.disabled=true;btn.textContent='Salvando...';
+async function doLogin(){
+  const email=document.getElementById('lE').value.trim().toLowerCase(),pw=document.getElementById('lP').value,err=document.getElementById('lErr');
+  if(!email||!pw){err.textContent='Preencha e-mail e senha';return}
   try{
-    if(editId)await req('PATCH',`tt_time_entries?id=eq.${editId}`,p,tok());
-    else await req('POST','tt_time_entries',p,tok());
-    toast(editId?'Atualizado':'Salvo','success');closeM('m-entry');
-    if(curPage==='entries')await loadETable();else loadToday();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-  finally{btn.disabled=false;btn.textContent='Salvar';}
+    err.textContent='Entrando...';
+    const members=await api('GET',`tt_members?email=eq.${encodeURIComponent(email)}&or=(is_active.eq.true,active.eq.true)&select=*`);
+    if(!members||members.length===0)throw new Error('E-mail não encontrado');
+    if(members[0].login_password!==pw)throw new Error('Senha incorreta');
+    S.user={id:members[0].id,email};S.currentMember=members[0];
+    await loadAll();
+    const fresh=S.members.find(m=>m.id===S.currentMember.id);if(fresh)S.currentMember=fresh;
+    S.page='timer';render();toast(`Bem-vindo, ${S.currentMember.name.split(' ')[0]}!`,'s');
+  }catch(e){err.textContent=e.message}
 }
 
-async function delEntry(id){
-  if(!confirm('Excluir este lançamento?'))return;
-  try{
-    await req('DELETE',`tt_time_entries?id=eq.${id}`,null,tok());
-    allEntries=allEntries.filter(e=>e.id!==id);
-    toast('Removido','success');
-    if(curPage==='entries')await loadETable();else loadToday();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+function doLogout(){
+  if(S.timerInterval)clearInterval(S.timerInterval);
+  S.user=null;S.currentMember=null;S.timerRunning=false;S.timerEntry=null;
+  S.fMember='';S.fClient='';S.fTeam='';S.fCat='';S.dateRange='month';
+  render();
 }
 
-// MEMBER MODAL
-let editMemberId=null;
-function openNewMember(){
-  editMemberId=null;
-  document.getElementById('m-member-t').textContent='Nova Pessoa';
-  document.getElementById('mb-name').value='';
-  document.getElementById('mb-email').value='';
-  document.getElementById('mb-role-inp').value='';
-  document.getElementById('mb-team').value='T1';
-  document.getElementById('mb-access').value='user';
-  document.getElementById('mb-cap').value='140';
-  document.getElementById('mb-pass').value='';
-  openM('m-member');
-}
-function editMember(id){
-  editMemberId=id;
-  const m=members.find(x=>x.id===id);if(!m)return;
-  document.getElementById('m-member-t').textContent='Editar Pessoa';
-  document.getElementById('mb-name').value=m.name||'';
-  document.getElementById('mb-email').value=m.email||'';
-  document.getElementById('mb-role-inp').value=m.job_title||m.role||'';
-  document.getElementById('mb-team').value=(m.team==='Pack'?'PACK':m.team)||'T1';
-  document.getElementById('mb-access').value=m.access_level||'user';
-  document.getElementById('mb-cap').value=m.capacity_hours_month||140;
-  document.getElementById('mb-pass').value='';
-  openM('m-member');
-}
-async function saveMember(){
-  const name=document.getElementById('mb-name').value.trim();
-  const email=document.getElementById('mb-email').value.trim();
-  const job_title=document.getElementById('mb-role-inp').value.trim();
-  const team=document.getElementById('mb-team').value;
-  const access_level=document.getElementById('mb-access').value;
-  const capacity_hours_month=parseInt(document.getElementById('mb-cap').value)||140;
-  if(!name){toast('Nome obrigatório','error');return;}
-  const btn=document.getElementById('mb-save');btn.disabled=true;btn.textContent='Salvando...';
-  try{
-    if(editMemberId){
-      // On edit: update all fields except email
-      const p={name,job_title,team,access_level,capacity_hours_month};
-      await req('PATCH',`tt_members?id=eq.${editMemberId}`,p,tok());
-    }else{
-      const p={name,email,job_title,team,access_level,capacity_hours_month};
-      await req('POST','tt_members',p,tok());
-    }
-    toast(editMemberId?'Atualizado':'Adicionado','success');closeM('m-member');await loadAll();buildNav();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-  finally{btn.disabled=false;btn.textContent='Salvar';}
-}
-
-// CLIENT MODAL
-let editClientId=null;
-function openNewClient(){
-  editClientId=null;
-  document.getElementById('m-client-t').textContent='Novo Cliente';
-  document.getElementById('cl-name').value='';
-  document.getElementById('cl-team').value='T1';
-  document.getElementById('cl-target').value='';
-  openM('m-client');
-}
-function editClient(id){
-  editClientId=id;
-  const c=clients.find(x=>x.id===id);if(!c)return;
-  document.getElementById('m-client-t').textContent='Editar Cliente';
-  document.getElementById('cl-name').value=c.name||'';
-  document.getElementById('cl-team').value=c.team||'T1';
-  document.getElementById('cl-target').value=c.target_hours_month||'';
-  openM('m-client');
-}
-async function saveClient(){
-  const p={name:document.getElementById('cl-name').value.trim(),team:document.getElementById('cl-team').value,target_hours_month:parseInt(document.getElementById('cl-target').value)||null};
-  if(!p.name){toast('Nome obrigatório','error');return;}
-  try{
-    if(editClientId)await req('PATCH',`tt_clients?id=eq.${editClientId}`,p,tok());
-    else await req('POST','tt_clients',p,tok());
-    toast(editClientId?'Atualizado':'Adicionado','success');closeM('m-client');await loadAll();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-
-// PROJECT MODAL
-function openNewProject(){
-  document.getElementById('pr-name').value='';
-  document.getElementById('pr-desc').value='';
-  document.getElementById('pr-client').innerHTML='<option value="">Selecionar</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  openM('m-project');
-}
-async function saveProject(){
-  const p={name:document.getElementById('pr-name').value.trim(),client_id:document.getElementById('pr-client').value,description:document.getElementById('pr-desc').value.trim()||null};
-  if(!p.name||!p.client_id){toast('Nome e cliente obrigatórios','error');return;}
-  try{
-    await req('POST','tt_projects',p,tok());
-    toast('Projeto adicionado','success');closeM('m-project');await loadAll();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-async function delProject(id){
-  if(!confirm('Excluir este projeto?'))return;
-  try{await req('DELETE',`tt_projects?id=eq.${id}`,null,tok());toast('Removido','success');await loadAll();renderPage();}
-  catch(ex){toast('Erro: '+ex.message,'error');}
-}
-
-// EXPORT
-function exportCsv(){
-  if(!allEntries.length){toast('Sem dados','error');return;}
-  const rows=[['Data','Descrição','Cliente','Projeto','Pessoa','Horas']];
-  allEntries.forEach(e=>rows.push([e.date,e.description||'',e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'',e.project?.name||projects.find(p=>p.id==e.project_id)?.name||'',e.member?.name||members.find(m=>m.id==e.member_id)?.name||'',(e.hours||0).toString().replace('.',',')]));
-  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(';')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
-  a.download=`tgt-time-${fMonth}.csv`;a.click();
-}
-
-// HELPERS
-function openM(id){document.getElementById(id).classList.add('open');}
-function closeM(id){document.getElementById(id).classList.remove('open');}
-function fmtH(h){const n=Math.round(h*100)/100;return n===Math.round(n)?n+'h':n.toFixed(1)+'h';}
-function fmtD(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}`;}
-function buildMoOpts(){const months=[];const now=new Date();for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const val=d.toISOString().slice(0,7);const label=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});months.push(`<option value="${val}"${val===fMonth?' selected':''}>${label}</option>`);}return months.join('');}
-function toggleSb(){document.getElementById('sb').classList.toggle('open');}
-function toast(msg,type='success'){const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span> ${msg}`;document.getElementById('toastc').appendChild(el);setTimeout(()=>el.remove(),3500);}
-
-if(window.innerWidth<=768)document.getElementById('mbtn').style.display='flex';
-window.addEventListener('resize',()=>{const b=document.getElementById('mbtn');if(b)b.style.display=window.innerWidth<=768?'flex':'none';});
-
-
-async function confirmDelMember(id, name){
-  if(!confirm('Remover ' + name + '?'))return;
-  try{
-    await req('DELETE',`tt_members?id=eq.${id}`,null,tok());
-    toast('Removido','success');await loadAll();buildNav();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-// INIT
-async function refreshSession(s){
-  try{
-    const r=await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':KEY},
-      body:JSON.stringify({refresh_token:s.refresh_token})
-    });
-    if(r.ok){
-      const ns=await r.json();
-      localStorage.setItem('tgt_sess',JSON.stringify(ns));
-      return ns;
-    }
-  }catch{}
-  return null;
-}
-
-(async()=>{
-  const sv=localStorage.getItem('tgt_sess');
-  if(sv){
-    try{
-      const s=JSON.parse(sv);
-      // Try current token first
-      const r=await fetch(`${SB}/auth/v1/user`,{headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});
-      if(r.ok){sess=s;await boot();return;}
-      // Token expired — try refresh
-      const ns=await refreshSession(s);
-      if(ns){sess=ns;await boot();return;}
-    }catch{}
-    localStorage.removeItem('tgt_sess');
-  }
-  document.getElementById('auth').style.display='flex';
-})();
+// ─── INIT ───
+render();
 </script>
 </body>
 </html>
