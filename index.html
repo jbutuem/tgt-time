@@ -283,7 +283,9 @@ function cn(id){return S.clients.find(c=>c.id===id)?.name||'—'}
 function mt(id){return S.members.find(m=>m.id===id)?.team||''}
 function gm(id){return S.members.find(m=>m.id===id)}
 function isA(){return S.currentMember?.access_level==='admin'}
+function isClient(){return S.currentMember?.access_level==='client'}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
+function toggleClientField(){const v=document.getElementById('mL').value;const w=document.getElementById('clientFieldWrap');if(w)w.style.display=v==='client'?'block':'none'}
 function toggleMenu(fc){
   const s=document.getElementById('sidebar'),o=document.getElementById('overlay');
   if(!s)return;
@@ -297,7 +299,10 @@ function filterEntries(entries){
   if(S.fClient)f=f.filter(e=>e.client_id===S.fClient);
   if(S.fTeam)f=f.filter(e=>mt(e.member_id)===S.fTeam);
   if(S.fCat)f=f.filter(e=>e.task_category===S.fCat);
-  if(!isA())f=f.filter(e=>e.member_id===S.currentMember.id);
+  if(!isA()){
+    if(isClient()) f=f.filter(e=>e.client_id===S.currentMember.client_id);
+    else f=f.filter(e=>e.member_id===S.currentMember.id);
+  }
   return f;
 }
 
@@ -327,10 +332,10 @@ function render(){
   if(!S.user)return renderLogin();
   const a=document.getElementById('app');
   const pages=[
-    ['timer','Timer',I.timer,'op'],
-    ['entries','Lançamentos',I.list,'op'],
-    ['dash_me','Meu Painel',I.chart,'dash'],
-    ['dash_client','Por Cliente',I.brief,'dash'],
+    ...(isClient()?[]:[['timer','Timer',I.timer,'op']]),
+    ...(isClient()?[]:[['entries','Lançamentos',I.list,'op']]),
+    ...(isClient()?[]:[['dash_me','Meu Painel',I.chart,'dash']]),
+    ...(isClient()?[['dash_myclient','Meu Consumo',I.chart,'dash']]:[['dash_client','Por Cliente',I.brief,'dash']]),
     ...(isA()?[['dash_team','Por Time',I.dash,'dash'],['dash_people','Por Pessoa',I.users,'dash'],['dash_fin','Financeiro',I.dollar,'dash']]:[]),
     ...(isA()?[['adm_members','Pessoas',I.users,'adm'],['adm_clients','Clientes',I.brief,'adm']]:[]),
   ];
@@ -412,12 +417,13 @@ async function renderPage(){
   const el=document.getElementById('pg');if(!el)return;
   try{
     const[from,to]=getDateRange(S.dateRange);
-    if(['entries','dash_me','dash_client','dash_team','dash_people','dash_fin'].includes(S.page))await loadEntries(from,to);
+    if(['entries','dash_me','dash_client','dash_myclient','dash_team','dash_people','dash_fin'].includes(S.page))await loadEntries(from,to);
     switch(S.page){
       case'timer':await pgTimer(el);break;
       case'entries':pgEntries(el);break;
       case'dash_me':pgDashMe(el);break;
       case'dash_client':pgDashClient(el);break;
+      case'dash_myclient':pgDashMyClient(el);break;
       case'dash_team':pgDashTeam(el);break;
       case'dash_people':pgDashPeople(el);break;
       case'dash_fin':pgDashFin(el);break;
@@ -594,6 +600,56 @@ function pgDashClient(el){
 
 // ─── DASH: TEAM ───
 function pgDashTeam(el){
+
+// ─── DASH: MY CLIENT (for client role) ───
+function pgDashMyClient(el){
+  const cid=S.currentMember?.client_id;
+  if(!cid){el.innerHTML='<div class="empty">Nenhum cliente associado à sua conta. Solicite ao administrador.</div>';return}
+  const client=S.clients.find(c=>c.id===cid);
+  if(!client){el.innerHTML='<div class="empty">Cliente não encontrado</div>';return}
+  const f=S.entries.filter(e=>e.client_id===cid);
+  const tot=f.reduce((s,e)=>s+(e.hours||e.duration_minutes/60||0),0);
+  const target=parseFloat(client.target_hours_month)||parseFloat(client.target_hours)||0;
+  const pct=target>0?(tot/target)*100:0;
+  const fee=parseFloat(client.fee_monthly)||0;
+  
+  // By category
+  const byCat={};f.forEach(e=>{const c=e.task_category||'Sem categoria';byCat[c]=(byCat[c]||0)+(e.hours||e.duration_minutes/60||0)});
+  const sc=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);const mx=sc[0]?.[1]||1;
+  
+  // By member (who worked)
+  const byMem={};f.forEach(e=>{const n=mn(e.member_id).split(' ').slice(0,2).join(' ');byMem[n]=(byMem[n]||0)+(e.hours||e.duration_minutes/60||0)});
+  const sm=Object.entries(byMem).sort((a,b)=>b[1]-a[1]);const mxm=sm[0]?.[1]||1;
+
+  el.innerHTML=`
+    ${dateFilterBar()}
+    <div style="margin-bottom:16px"><h2 style="font-size:20px;font-weight:800">${client.name}</h2><span style="font-size:12px;color:var(--txt2)">${TB(client.team)} · ${RANGE_LABELS[S.dateRange]}</span></div>
+    <div class="cards" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card"><div class="cl">Horas consumidas</div><div class="cv">${fH(tot)}</div><div class="cs">${f.length} atividades</div></div>
+      <div class="card card-g"><div class="cl">Meta contratada</div><div class="cv">${target>0?fH(target):'—'}</div></div>
+      <div class="card card-b"><div class="cl">Progresso</div><div class="cv" style="color:${pct>110?'var(--red)':pct>90?'var(--pack)':'var(--prod)'}">${target>0?pct.toFixed(0)+'%':'—'}</div>
+        ${target>0?`<div class="pb"><div class="pb-f" style="width:${Math.min(pct,100)}%;background:${pct>110?'var(--red)':pct>90?'var(--pack)':'var(--prod)'}"></div></div>`:''}
+      </div>
+      <div class="card"><div class="cl">Saldo</div><div class="cv" style="color:${target-tot>=0?'var(--prod)':'var(--red)'}">${target>0?fH(target-tot):'—'}</div><div class="cs">${target>0?(target-tot>=0?'disponível':'excedido'):'sem meta'}</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="tbl"><div class="tbl-h"><h3>Horas por Categoria</h3></div><div style="padding:12px">${sc.map(([c,h])=>`<div class="cb"><div class="cb-l">${c}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mx)*100}%;background:${CC[c]||'#666'}"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sc.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
+      <div class="tbl"><div class="tbl-h"><h3>Equipe alocada</h3></div><div style="padding:12px">${sm.map(([n,h])=>`<div class="cb"><div class="cb-l">${n}</div><div class="cb-t"><div class="cb-f" style="width:${(h/mxm)*100}%;background:var(--red)"><span class="cb-v">${fH(h)}</span></div></div></div>`).join('')}${sm.length===0?'<div class="empty">Sem dados no período</div>':''}</div></div>
+    </div>
+    <div class="tbl" style="margin-top:16px"><div class="tbl-h"><h3>Últimas atividades</h3></div>
+    <div class="tbl-r"><table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th style="text-align:right">Horas</th></tr></thead>
+    <tbody>${f.slice(0,50).map(e=>`<tr>
+      <td>${(e.date||e.started_at?.substring(0,10)||'—')}</td>
+      <td>${e.task_category?`<span style="color:${CC[e.task_category]||'#999'}">${e.task_category}</span>`:'—'}</td>
+      <td style="color:var(--txt2)">${e.description||'—'}</td>
+      <td style="text-align:right;font-weight:700">${fH(e.hours||e.duration_minutes/60||0)}</td>
+    </tr>`).join('')}
+    ${f.length===0?'<tr><td colspan="4" class="empty">Sem atividades no período</td></tr>':''}
+    </tbody></table></div></div>`;
+}
+
+// ─── DASH: TEAM (original continues) ───
+function pgDashTeam(el){
   if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
   const f=filterEntries(S.entries);
   const teams={};
@@ -697,10 +753,11 @@ function pgAdmMembers(el){
   if(!isA()){el.innerHTML='<div class="empty">Acesso restrito</div>';return}
   el.innerHTML=`
     <div class="tbl"><div class="tbl-h"><h3>Equipe (${S.members.length})</h3><button class="btn btn-r btn-sm" onclick="showMemberModal()">${I.plus} Adicionar</button></div>
-    <div class="tbl-r"><table><thead><tr><th>Nome</th><th>Time</th><th>Função</th><th>Nível</th><th style="text-align:right">Cap</th><th style="text-align:right">R$/h</th><th></th></tr></thead>
+    <div class="tbl-r"><table><thead><tr><th>Nome</th><th>Time</th><th>Função</th><th>Nível</th><th>Cliente</th><th style="text-align:right">Cap</th><th style="text-align:right">R$/h</th><th></th></tr></thead>
     <tbody>${S.members.map(m=>`<tr>
       <td style="font-weight:600">${m.name}</td><td>${TB(m.team)}</td><td>${m.job_title||'—'}</td>
-      <td><span class="bg ${m.access_level==='admin'?'bg-adm':m.access_level==='account'?'bg-t1':'bg-prod'}">${m.access_level||'user'}</span></td>
+      <td><span class="bg ${m.access_level==='admin'?'bg-adm':m.access_level==='account'?'bg-t1':m.access_level==='client'?'bg-pack':'bg-prod'}">${m.access_level||'user'}</span></td>
+      <td style="font-size:11px;color:var(--txt2)">${m.client_id?cn(m.client_id):'—'}</td>
       <td style="text-align:right">${m.capacity_hours_month||m.capacity_hours||'—'}</td>
       <td style="text-align:right">${parseFloat(m.hourly_cost||0).toFixed(0)}</td>
       <td><button class="btn-i" onclick="showMemberModal('${m.id}')">${I.edit}</button></td>
@@ -720,7 +777,10 @@ function showMemberModal(id){
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
       <div class="fg"><label>Cap h/mês</label><input type="number" class="fc" id="mC" value="${m.capacity_hours_month||m.capacity_hours||140}"></div>
       <div class="fg"><label>Custo/h</label><input type="number" class="fc" id="mH" value="${m.hourly_cost||0}"></div>
-      <div class="fg"><label>Nível</label><select class="fc" id="mL">${['user','account','admin'].map(l=>`<option value="${l}" ${m.access_level===l?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="fg"><label>Nível</label><select class="fc" id="mL" onchange="toggleClientField()">${['user','account','admin','client'].map(l=>`<option value="${l}" ${m.access_level===l?'selected':''}>${l}</option>`).join('')}</select></div>
+    </div>
+    <div id="clientFieldWrap" style="display:${m.access_level==='client'?'block':'none'}">
+      <div class="fg"><label>Cliente associado</label><select class="fc" id="mCli"><option value="">Selecione o cliente</option>${S.clients.map(c=>`<option value="${c.id}" ${m.client_id===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="fg"><label>E-mail</label><input class="fc" id="mE" value="${m.email||''}"></div>
@@ -735,7 +795,7 @@ function showMemberModal(id){
 }
 
 async function saveMember(id){
-  const d={name:document.getElementById('mN').value,team:document.getElementById('mT').value,job_title:document.getElementById('mJ').value,capacity_hours_month:parseFloat(document.getElementById('mC').value)||140,hourly_cost:parseFloat(document.getElementById('mH').value)||0,access_level:document.getElementById('mL').value,email:document.getElementById('mE').value||null,login_password:document.getElementById('mP').value||'TGTtime2026',monday_user_id:document.getElementById('mM').value||null,is_active:true,active:true};
+  const d={name:document.getElementById('mN').value,team:document.getElementById('mT').value,job_title:document.getElementById('mJ').value,capacity_hours_month:parseFloat(document.getElementById('mC').value)||140,hourly_cost:parseFloat(document.getElementById('mH').value)||0,access_level:document.getElementById('mL').value,client_id:document.getElementById('mCli')?.value||null,email:document.getElementById('mE').value||null,login_password:document.getElementById('mP').value||'TGTtime2026',monday_user_id:document.getElementById('mM').value||null,is_active:true,active:true};
   if(!d.name){toast('Nome obrigatório','e');return}
   try{
     if(id)await api('PATCH',`tt_members?id=eq.${id}`,d);else await api('POST','tt_members',d);
@@ -815,7 +875,7 @@ async function doLogin(){
     S.user={id:members[0].id,email};S.currentMember=members[0];
     await loadAll();
     const fresh=S.members.find(m=>m.id===S.currentMember.id);if(fresh)S.currentMember=fresh;
-    S.page='timer';render();toast(`Bem-vindo, ${S.currentMember.name.split(' ')[0]}!`,'s');
+    S.page=isClient()?'dash_myclient':'timer';render();toast(`Bem-vindo, ${S.currentMember.name.split(' ')[0]}!`,'s');
   }catch(e){err.textContent=e.message}
 }
 
