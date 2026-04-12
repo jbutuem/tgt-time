@@ -164,6 +164,27 @@ tbody td{padding:11px 16px;font-size:13px}
 .toast.info{border-color:rgba(96,165,250,.4);color:#60a5fa}
 @keyframes sIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 
+
+/* RUNNING INDICATOR */
+.running-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;margin-right:6px;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.running-row{background:rgba(237,28,36,.04) !important}
+.running-row td{color:var(--gray) !important}
+.running-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(237,28,36,.12);color:var(--red)}
+.hours-cell{font-variant-numeric:tabular-nums}
+
+/* TIMER DISABLED STATE */
+.tinp:disabled,.tsel:disabled{opacity:.5;cursor:not-allowed}
+
+/* MONDAY ORIGIN BADGE */
+.origin-monday{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px;background:rgba(69,94,110,.2);color:#8ab4c8}
+
+/* BETTER EMPTY STATE */
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.4}
+
+/* AUTO-REFRESH INDICATOR */
+.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;animation:pulse 2s infinite}
+
 /* UTILS */
 .spin{width:18px;height:18px;border:2px solid var(--b2);border-top-color:var(--red);border-radius:50%;animation:ro .7s linear infinite;flex-shrink:0}
 @keyframes ro{to{transform:rotate(360deg)}}
@@ -275,8 +296,9 @@ tbody td{padding:11px 16px;font-size:13px}
       </div>
       <div class="frow">
         <div class="fld"><label class="lbl">Capacidade (h/mês)</label><input class="inp" id="mb-cap" type="number" value="140"></div>
-        <div class="fld"><label class="lbl">Senha (novo usuário)</label><input class="inp" id="mb-pass" type="password" placeholder="Deixe em branco para manter"></div>
+        <div class="fld"><label class="lbl">Monday User ID</label><input class="inp" id="mb-monday" type="text" placeholder="Ex: 43169509 (para integração)"></div>
       </div>
+      <div class="fld"><label class="lbl">Senha (apenas novo usuário)</label><input class="inp" id="mb-pass" type="password" placeholder="Deixe em branco para manter"></div>
     </div>
     <div class="mf">
       <button class="bcan" onclick="closeM('m-member')">Cancelar</button>
@@ -595,7 +617,7 @@ async function pgTimer(el){
       <div class="sc"><div class="slbl">Timer</div><div class="sval" style="color:${running?'var(--red)':'var(--gray2)'}">●</div><div class="ssub">${running?'Rodando':'Parado'}</div></div>
     </div>
     <div class="sh">
-      <span class="stitle">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</span>
+      <span class="stitle">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}<span class="refresh-dot" title="Atualiza a cada 30s"></span></span>
       <button class="bsmr" onclick="openNewEntry()">+ Manual</button>
     </div>
     <div id="twrap"></div>`;
@@ -611,21 +633,38 @@ async function loadToday(){
     let q=`tt_time_entries?select=*,member:tt_members(id,name),client:tt_clients(id,name),project:tt_projects(id,name)&date=eq.${today}&order=created_at.desc`;
     if(me?.access_level==='user')q+=`&member_id=eq.${me.id}`;
     const data=await req('GET',q,null,tok())||[];
-    loadStats(data);
+    // Separate completed vs running
+    const completed=data.filter(e=>!e.is_running);
+    const runningEntries=data.filter(e=>e.is_running);
+    loadStats(completed);
     const w=document.getElementById('twrap');if(!w)return;
-    w.innerHTML=data.length?buildTable(data,me?.access_level!=='user'):'<div class="empty">Nenhum lançamento hoje.</div>';
+    let html='';
+    if(runningEntries.length){
+      html+=`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center"><span class="running-dot"></span>Em andamento (${runningEntries.length})</div>`;
+      html+=buildRunningTable(runningEntries);
+      html+='</div>';
+    }
+    if(completed.length){
+      html+=buildTable(completed,me?.access_level!=='user');
+    }
+    if(!completed.length&&!runningEntries.length){
+      html='<div class="empty"><div class="empty-icon">⏱</div>Nenhum lançamento hoje.<br><span style="font-size:11px;color:var(--gray2);margin-top:4px;display:block">Use o timer acima ou adicione manualmente</span></div>';
+    }
+    w.innerHTML=html;
   }catch(ex){console.error(ex);}
 }
+// Auto-refresh every 30s when on timer page
+setInterval(()=>{if(curPage==='timer'&&!document.hidden)loadToday();},30000);
 
 async function loadStats(todayD){
   try{
     const today=new Date(),ws=new Date(today);ws.setDate(today.getDate()-today.getDay()+1);
-    const th=(todayD||[]).reduce((a,e)=>a+(e.hours||0),0);
+    const th=(todayD||[]).filter(e=>!e.is_running).reduce((a,e)=>a+(e.hours||0),0);
     if(document.getElementById('st-t'))document.getElementById('st-t').textContent=fmtH(th);
     if(!me)return;
-    const wD=await req('GET',`tt_time_entries?select=hours&date=gte.${ws.toISOString().split('T')[0]}&member_id=eq.${me.id}`,null,tok())||[];
+    const wD=await req('GET',`tt_time_entries?select=hours,is_running&date=gte.${ws.toISOString().split('T')[0]}&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
     if(document.getElementById('st-w'))document.getElementById('st-w').textContent=fmtH(wD.reduce((a,e)=>a+(e.hours||0),0));
-    const mD=await req('GET',`tt_time_entries?select=hours&date=gte.${fMonth}-01&member_id=eq.${me.id}`,null,tok())||[];
+    const mD=await req('GET',`tt_time_entries?select=hours,is_running&date=gte.${fMonth}-01&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
     const mH=mD.reduce((a,e)=>a+(e.hours||0),0),cap=me.capacity_hours_month||140,pct=Math.min(100,Math.round(mH/cap*100));
     if(document.getElementById('st-m'))document.getElementById('st-m').textContent=fmtH(mH);
     if(document.getElementById('st-ms'))document.getElementById('st-ms').textContent=`de ${cap}h meta (${pct}%)`;
@@ -674,9 +713,14 @@ async function loadETable(){
       const mids=acMembers[me.id]||[];
       allEntries=allEntries.filter(e=>mids.includes(e.member_id));
     }
-    if(!allEntries.length){w.innerHTML='<div class="empty">Nenhum lançamento encontrado.</div>';return;}
-    const tot=allEntries.reduce((a,e)=>a+(e.hours||0),0);
-    w.innerHTML=`<div style="margin-bottom:10px;font-size:12px;color:var(--gray)">${allEntries.length} lançamentos · <strong style="color:var(--w)">${fmtH(tot)} total</strong></div>${buildTable(allEntries,true,true)}`;
+    if(!allEntries.length){w.innerHTML='<div class="empty"><div class="empty-icon">📋</div>Nenhum lançamento encontrado.</div>';return;}
+    const completed=allEntries.filter(e=>!e.is_running);
+    const runningE=allEntries.filter(e=>e.is_running);
+    const tot=completed.reduce((a,e)=>a+(e.hours||0),0);
+    let html=`<div style="margin-bottom:10px;font-size:12px;color:var(--gray)">${completed.length} lançamentos · <strong style="color:var(--w)">${fmtH(tot)} total</strong>${runningE.length?` · <span style="color:var(--red)">${runningE.length} em andamento</span>`:''}</div>`;
+    if(runningE.length) html+=`<div style="margin-bottom:12px">${buildRunningTable(runningE)}</div>`;
+    if(completed.length) html+=buildTable(completed,true,true);
+    w.innerHTML=html;
   }catch(ex){w.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;}
 }
 
@@ -688,6 +732,21 @@ function onFC(){
   loadETable();
 }
 
+function buildRunningTable(data){
+  return `<div class="tw"><table>
+    <thead><tr><th>Descrição</th><th>Cliente</th><th>Pessoa</th><th>Início</th><th>Status</th></tr></thead>
+    <tbody>${data.map(e=>{
+      const startTime=e.started_at?new Date(e.started_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—';
+      return `<tr class="running-row">
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
+        <td>${e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'—'}</td>
+        <td><span class="badge">${e.member?.name?.split(' ')[0]||'—'}</span></td>
+        <td class="tg">${startTime}</td>
+        <td><span class="running-badge"><span class="running-dot"></span>Rodando</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
 function buildTable(data,showM,showProject){
   return `<div class="tw"><table>
     <thead><tr>
@@ -702,7 +761,7 @@ function buildTable(data,showM,showProject){
       <td>${e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'—'}</td>
       ${showProject?`<td class="tg">${e.project?.name||'—'}</td>`:''}
       ${showM?`<td><span class="badge">${e.member?.name?.split(' ')[0]||'—'}</span></td>`:''}
-      <td class="tr">${fmtH(e.hours||0)}</td>
+      <td class="tr hours-cell">${fmtH(e.hours||0)}</td>
       <td style="white-space:nowrap">
         <button class="bsm" onclick="editEntry('${e.id}')" style="padding:4px 8px;font-size:11px;margin-right:4px">✎</button>
         <button class="bsm" onclick="delEntry('${e.id}')" style="padding:4px 8px;font-size:11px;color:var(--gray2)">✕</button>
@@ -713,7 +772,7 @@ function buildTable(data,showM,showProject){
 
 // PAGE: REPORTS
 async function pgRTeam(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rt-mo" onchange="pgRTeam(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rtc" class="lc"><div class="spin"></div></div>`;
+  el.innerHTML=`<div class="filters"><select class="fsel" id="rt-mo" onchange="fMonth=this.value;pgRTeam(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rtc" class="lc"><div class="spin"></div></div>`;
   document.getElementById('rt-mo').value=fMonth;
   const month=document.getElementById('rt-mo').value;
   const data=await fetchReportData(month)||[];
@@ -737,7 +796,7 @@ async function pgRTeam(el){
 }
 
 async function pgRClient(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rc-mo" onchange="pgRClient(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rcc" class="lc"><div class="spin"></div></div>`;
+  el.innerHTML=`<div class="filters"><select class="fsel" id="rc-mo" onchange="fMonth=this.value;pgRClient(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rcc" class="lc"><div class="spin"></div></div>`;
   document.getElementById('rc-mo').value=fMonth;
   const month=document.getElementById('rc-mo').value;
   const data=await fetchReportData(month)||[];
@@ -764,7 +823,7 @@ async function pgRClient(el){
 }
 
 async function pgRPerson(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rp-mo" onchange="pgRPerson(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rpc" class="lc"><div class="spin"></div></div>`;
+  el.innerHTML=`<div class="filters"><select class="fsel" id="rp-mo" onchange="fMonth=this.value;pgRPerson(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rpc" class="lc"><div class="spin"></div></div>`;
   document.getElementById('rp-mo').value=fMonth;
   const month=document.getElementById('rp-mo').value;
   const data=await fetchReportData(month)||[];
@@ -812,7 +871,7 @@ async function pgAdmMembers(el){
   el.innerHTML=`
     <div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
     <div class="tw"><table>
-      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th></th></tr></thead>
+      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th>Monday ID</th><th></th></tr></thead>
       <tbody>${members.map(m=>{
         const rl={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
         const rc={admin:'rb-admin',account:'rb-account',user:'rb-user',executor:'rb-user',prod:'rb-user'};
@@ -825,6 +884,7 @@ async function pgAdmMembers(el){
           <td class="tg">${fn}</td>
           <td class="tg">${m.capacity_hours_month||140}h</td>
           <td class="tg" style="font-size:11px">${m.email||'—'}</td>
+          <td class="tg" style="font-size:10px;font-family:monospace">${m.monday_user_id||'—'}</td>
           <td style="white-space:nowrap">
             <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
             <button class="bsm" onclick="confirmDelMember(this)" data-id="${m.id}" data-name="${m.name.replace(/"/g,'')}" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
@@ -1014,7 +1074,7 @@ async function saveEntry(){
 }
 
 async function delEntry(id){
-  if(!confirm('Excluir este lançamento?'))return;
+  if(!confirm(`Excluir "${(allEntries.find(x=>x.id===id)?.description||'este lançamento').substring(0,40)}"?`))return;
   try{
     await req('DELETE',`tt_time_entries?id=eq.${id}`,null,tok());
     allEntries=allEntries.filter(e=>e.id!==id);
@@ -1034,7 +1094,9 @@ function openNewMember(){
   document.getElementById('mb-team').value='T1';
   document.getElementById('mb-access').value='user';
   document.getElementById('mb-cap').value='140';
+  document.getElementById('mb-monday').value='';
   document.getElementById('mb-pass').value='';
+  document.getElementById('mb-monday').value=document.getElementById('mb-monday')?.value||'';
   openM('m-member');
 }
 function editMember(id){
@@ -1047,6 +1109,7 @@ function editMember(id){
   document.getElementById('mb-team').value=(m.team==='Pack'?'PACK':m.team)||'T1';
   document.getElementById('mb-access').value=m.access_level||'user';
   document.getElementById('mb-cap').value=m.capacity_hours_month||140;
+  document.getElementById('mb-monday').value=m.monday_user_id||'';
   document.getElementById('mb-pass').value='';
   openM('m-member');
 }
@@ -1062,10 +1125,12 @@ async function saveMember(){
   try{
     if(editMemberId){
       // On edit: update all fields except email
-      const p={name,job_title,team,access_level,capacity_hours_month};
+      const monday_user_id=document.getElementById('mb-monday').value.trim()||null;
+      const p={name,job_title,team,access_level,capacity_hours_month,monday_user_id};
       await req('PATCH',`tt_members?id=eq.${editMemberId}`,p,tok());
     }else{
-      const p={name,email,job_title,team,access_level,capacity_hours_month};
+      const monday_user_id=document.getElementById('mb-monday').value.trim()||null;
+      const p={name,email,job_title,team,access_level,capacity_hours_month,monday_user_id};
       await req('POST','tt_members',p,tok());
     }
     toast(editMemberId?'Atualizado':'Adicionado','success');closeM('m-member');await loadAll();buildNav();renderPage();
@@ -1137,7 +1202,7 @@ function exportCsv(){
 // HELPERS
 function openM(id){document.getElementById(id).classList.add('open');}
 function closeM(id){document.getElementById(id).classList.remove('open');}
-function fmtH(h){const n=Math.round(h*100)/100;return n===Math.round(n)?n+'h':n.toFixed(1)+'h';}
+function fmtH(h){if(!h||h===0)return'0h';const n=Math.round(h*100)/100;if(n>=1)return n.toFixed(1)+'h';const m=Math.round(n*60);return m+'min';}
 function fmtD(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}`;}
 function buildMoOpts(){const months=[];const now=new Date();for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const val=d.toISOString().slice(0,7);const label=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});months.push(`<option value="${val}"${val===fMonth?' selected':''}>${label}</option>`);}return months.join('');}
 function toggleSb(){document.getElementById('sb').classList.toggle('open');}
