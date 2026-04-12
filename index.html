@@ -7,12 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23231F20'/%3E%3Ctext x='3' y='24' font-size='20' font-weight='900' fill='%23ED1C24' font-family='sans-serif'%3ETGT%3C/text%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap');
-:root{--bg:#1a1818;--bg2:#242121;--bg3:#2e2b2b;--bg4:#383434;--red:#ED1C24;--red2:#b51219;--w:#fff;--gray:#9D9D9C;--gray2:#575756;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--r:8px;--green:#34d399;--amber:#fbbf24}
+:root{--bg:#1a1818;--bg2:#242121;--bg3:#2e2b2b;--bg4:#383434;--red:#ED1C24;--red2:#b51219;--w:#fff;--gray:#9D9D9C;--gray2:#575756;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--r:8px;--green:#34d399;--amber:#fbbf24;--blue:#60a5fa}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden}
 input,select,textarea,button{font-family:inherit}
 button{cursor:pointer;border:none;outline:none}
 a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 
 /* AUTH */
 #auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
@@ -53,10 +56,6 @@ a{text-decoration:none;color:inherit}
 .usrrole{font-size:10px;color:var(--gray)}
 .btnout{background:none;color:var(--gray2);padding:4px;border-radius:4px;transition:color .15s}
 .btnout:hover{color:var(--red)}
-.role-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-left:4px}
-.rb-admin{background:rgba(237,28,36,.2);color:var(--red)}
-.rb-account{background:rgba(69,94,110,.3);color:#8ab4c8}
-.rb-user{background:rgba(87,87,86,.3);color:var(--gray)}
 
 .main{margin-left:220px;min-height:100vh;display:flex;flex-direction:column}
 .topbar{background:var(--bg2);border-bottom:1px solid var(--b);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
@@ -68,8 +67,10 @@ a{text-decoration:none;color:inherit}
 .tinp{flex:1;min-width:180px;background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;color:var(--w);font-size:13px}
 .tinp::placeholder{color:var(--gray2)}
 .tinp:focus{outline:none;border-color:var(--red)}
+.tinp:disabled{opacity:.5;cursor:not-allowed}
 .tsel{background:var(--bg3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;color:var(--w);font-size:13px;min-width:150px}
 .tsel:focus{outline:none;border-color:var(--red)}
+.tsel:disabled{opacity:.5;cursor:not-allowed}
 .tsel option{background:var(--bg3)}
 .tclock{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;min-width:100px;text-align:center}
 .tclock.on{color:var(--red)}
@@ -87,8 +88,18 @@ a{text-decoration:none;color:inherit}
 .sprog{height:3px;background:var(--bg4);border-radius:2px;margin-top:10px;overflow:hidden}
 .sprogb{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
 
+/* FILTERS BAR - TMetric style */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.fsel{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:7px 12px;color:var(--w);font-size:12px;font-weight:500}
+.fsel:focus{outline:none;border-color:var(--red)}
+.fsel option{background:var(--bg3)}
+.fbtn{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:7px 14px;color:var(--w);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.fbtn:hover{border-color:var(--red);color:var(--red)}
+.fbtn.active{background:rgba(237,28,36,.12);border-color:var(--red);color:var(--red)}
+.fdivider{width:1px;height:24px;background:var(--b2);margin:0 4px}
+
 /* TABLE */
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
 .stitle{font-size:14px;font-weight:700}
 .tw{background:var(--bg2);border:1px solid var(--b);border-radius:12px;overflow:hidden}
 table{width:100%;border-collapse:collapse}
@@ -97,9 +108,21 @@ tbody tr{border-top:1px solid var(--b)}
 tbody tr:hover{background:rgba(255,255,255,.02)}
 tbody td{padding:11px 16px;font-size:13px}
 .tg{color:var(--gray)}
-.tr{color:var(--red);font-weight:600}
-.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(69,94,110,.3);color:#8ab4c8}
+.tr{color:var(--red);font-weight:600;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge-t1{background:rgba(59,130,246,.15);color:#60a5fa}
+.badge-t3{background:rgba(168,85,247,.15);color:#c084fc}
+.badge-t4{background:rgba(6,182,212,.15);color:#22d3ee}
+.badge-pack{background:rgba(251,191,36,.15);color:#fbbf24}
+.badge-prod{background:rgba(52,211,153,.15);color:#34d399}
+.badge-adm{background:rgba(157,157,156,.15);color:#9D9D9C}
 .empty{padding:40px;text-align:center;color:var(--gray);font-size:13px}
+
+/* RUNNING INDICATOR */
+.rdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;margin-right:5px;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.running-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(237,28,36,.12);color:var(--red)}
+.running-row{background:rgba(237,28,36,.03) !important}
 
 /* BUTTONS */
 .bsm{background:var(--bg3);border:1px solid var(--b2);color:var(--w);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:600;transition:all .15s}
@@ -108,6 +131,10 @@ tbody td{padding:11px 16px;font-size:13px}
 .bsmr:hover{background:rgba(237,28,36,.2)}
 .bsmg{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:600;transition:all .15s}
 .bsmg:hover{background:rgba(52,211,153,.2)}
+.role-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-left:4px}
+.rb-admin{background:rgba(237,28,36,.2);color:var(--red)}
+.rb-account{background:rgba(69,94,110,.3);color:#8ab4c8}
+.rb-user{background:rgba(87,87,86,.3);color:var(--gray)}
 
 /* MODAL */
 .mov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
@@ -126,12 +153,6 @@ tbody td{padding:11px 16px;font-size:13px}
 .bsave:hover{background:var(--red2)}
 .bsave:disabled{opacity:.6;cursor:not-allowed}
 
-/* FILTERS */
-.filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-.fsel{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:7px 12px;color:var(--w);font-size:12px;font-weight:500}
-.fsel:focus{outline:none;border-color:var(--red)}
-.fsel option{background:var(--bg3)}
-
 /* REPORT */
 .rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
 .rc{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:20px}
@@ -141,9 +162,9 @@ tbody td{padding:11px 16px;font-size:13px}
 .rname{font-size:13px;font-weight:500;flex:0 0 130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rbarw{flex:1;height:4px;background:var(--bg4);border-radius:2px;margin:0 12px;overflow:hidden}
 .rbar{height:100%;background:var(--red);border-radius:2px}
-.rhours{font-size:13px;font-weight:700;color:var(--red);flex:0 0 44px;text-align:right}
+.rhours{font-size:13px;font-weight:700;color:var(--red);flex:0 0 55px;text-align:right;font-variant-numeric:tabular-nums}
 
-/* ADMIN PANELS */
+/* ADMIN */
 .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
 .acard{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:20px}
 .actitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
@@ -151,10 +172,14 @@ tbody td{padding:11px 16px;font-size:13px}
 .assoc-tag{background:var(--bg3);border:1px solid var(--b2);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
 .assoc-tag button{background:none;color:var(--gray2);font-size:13px;line-height:1;padding:0;transition:color .15s}
 .assoc-tag button:hover{color:var(--red)}
-.tabtabs{display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content}
-.tabtab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:var(--gray);transition:all .15s}
-.tabtab:hover{color:var(--w)}
-.tabtab.active{background:var(--bg2);color:var(--w)}
+.section-info{font-size:12px;color:var(--gray);margin-bottom:16px}
+
+/* DAY GROUP - Detailed report style */
+.day-group{margin-bottom:20px}
+.day-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg3);border-radius:8px 8px 0 0;border:1px solid var(--b)}
+.day-header-date{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.day-header-total{font-size:13px;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
+.day-entries{border:1px solid var(--b);border-top:none;border-radius:0 0 8px 8px;overflow:hidden}
 
 /* TOAST */
 #toastc{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
@@ -164,39 +189,18 @@ tbody td{padding:11px 16px;font-size:13px}
 .toast.info{border-color:rgba(96,165,250,.4);color:#60a5fa}
 @keyframes sIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-
-/* RUNNING INDICATOR */
-.running-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;margin-right:6px;vertical-align:middle}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.running-row{background:rgba(237,28,36,.04) !important}
-.running-row td{color:var(--gray) !important}
-.running-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(237,28,36,.12);color:var(--red)}
-.hours-cell{font-variant-numeric:tabular-nums}
-
-/* TIMER DISABLED STATE */
-.tinp:disabled,.tsel:disabled{opacity:.5;cursor:not-allowed}
-
-/* MONDAY ORIGIN BADGE */
-.origin-monday{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px;background:rgba(69,94,110,.2);color:#8ab4c8}
-
-/* BETTER EMPTY STATE */
-.empty-icon{font-size:32px;margin-bottom:8px;opacity:.4}
-
-/* AUTO-REFRESH INDICATOR */
-.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;animation:pulse 2s infinite}
-
 /* UTILS */
 .spin{width:18px;height:18px;border:2px solid var(--b2);border-top-color:var(--red);border-radius:50%;animation:ro .7s linear infinite;flex-shrink:0}
 @keyframes ro{to{transform:rotate(360deg)}}
 .lc{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:var(--gray);font-size:13px}
 .divider{height:1px;background:var(--b);margin:16px 0}
-.section-info{font-size:12px;color:var(--gray);margin-bottom:16px}
 
 @media(max-width:768px){
   .sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}
   .main{margin-left:0}.topbar{padding:0 16px}.content{padding:16px}
   .frow{grid-template-columns:1fr}.tclock{font-size:20px}
   #mbtn{display:flex !important}
+  .filters{gap:6px}.fsel{font-size:11px;padding:6px 8px}
 }
 </style>
 </head>
@@ -296,7 +300,7 @@ tbody td{padding:11px 16px;font-size:13px}
       </div>
       <div class="frow">
         <div class="fld"><label class="lbl">Capacidade (h/mês)</label><input class="inp" id="mb-cap" type="number" value="140"></div>
-        <div class="fld"><label class="lbl">Monday User ID</label><input class="inp" id="mb-monday" type="text" placeholder="Ex: 43169509 (para integração)"></div>
+        <div class="fld"><label class="lbl">Monday User ID</label><input class="inp" id="mb-monday" type="text" placeholder="Ex: 43169509"></div>
       </div>
       <div class="fld"><label class="lbl">Senha (apenas novo usuário)</label><input class="inp" id="mb-pass" type="password" placeholder="Deixe em branco para manter"></div>
     </div>
@@ -356,17 +360,21 @@ const SB='https://opqivuzvyvvvajokutvc.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcWl2dXp2eXZ2dmFqb2t1dHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTg0ODIsImV4cCI6MjA5MDQ3NDQ4Mn0.7mH_9ikNMnM2zfUFQrb1ot6t47plzib6No2GPT0gfa0';
 
 // STATE
-let sess=null, me=null, members=[], clients=[], projects=[];
-let acMembers={}, acClients={};  // account associations
-let timerInt=null, timerStart=null, timerSec=0, running=null;
-let curPage='timer', editId=null;
-let fMonth=new Date().toISOString().slice(0,7), fMember='', fClient='', fProject='';
+let sess=null,me=null,members=[],clients=[],projects=[];
+let acMembers={},acClients={};
+let timerInt=null,timerStart=null,timerSec=0,running=null;
+let curPage='timer',editId=null;
+let allEntries=[];
+
+// Date range filter state
+let dateRange='week'; // today,yesterday,week,lastweek,month,lastmonth,all,custom
+let customFrom='',customTo='';
+let fMember='',fClient='',fTeam='',fProject='';
 
 // API
 async function req(method,path,body,tok){
   const h={'Content-Type':'application/json','apikey':KEY,'Authorization':`Bearer ${tok||KEY}`};
-  if(method==='POST')h['Prefer']='return=representation';
-  if(method==='PATCH')h['Prefer']='return=representation';
+  if(method==='POST'||method==='PATCH')h['Prefer']='return=representation';
   const r=await fetch(`${SB}/rest/v1/${path}`,{method,headers:h,body:body?JSON.stringify(body):undefined});
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||r.statusText)}
   if(r.status===204)return null;
@@ -383,179 +391,105 @@ const tok=()=>sess?.access_token;
 const isAdmin=()=>me?.access_level==='admin';
 const isAccount=()=>me?.access_level==='account'||isAdmin();
 
+// DATE RANGE HELPERS
+function getDateRange(){
+  const today=new Date();
+  const fmt=d=>d.toISOString().split('T')[0];
+  const mon=d=>{const r=new Date(d);r.setDate(r.getDate()-(r.getDay()||7)+1);return r;};
+  switch(dateRange){
+    case 'today':return{from:fmt(today),to:fmt(today)};
+    case 'yesterday':{const y=new Date(today);y.setDate(y.getDate()-1);return{from:fmt(y),to:fmt(y)};}
+    case 'week':return{from:fmt(mon(today)),to:fmt(today)};
+    case 'lastweek':{const s=mon(today);s.setDate(s.getDate()-7);const e=new Date(s);e.setDate(e.getDate()+6);return{from:fmt(s),to:fmt(e)};}
+    case 'month':return{from:fmt(new Date(today.getFullYear(),today.getMonth(),1)),to:fmt(today)};
+    case 'lastmonth':{const s=new Date(today.getFullYear(),today.getMonth()-1,1);const e=new Date(today.getFullYear(),today.getMonth(),0);return{from:fmt(s),to:fmt(e)};}
+    case 'custom':return{from:customFrom||fmt(new Date(today.getFullYear(),today.getMonth(),1)),to:customTo||fmt(today)};
+    case 'all':return{from:'2024-01-01',to:fmt(today)};
+    default:return{from:fmt(mon(today)),to:fmt(today)};
+  }
+}
+const DATE_LABELS={'today':'Hoje','yesterday':'Ontem','week':'Semana Atual','lastweek':'Semana Passada','month':'Mês Atual','lastmonth':'Mês Passado','all':'Todo Período','custom':'Personalizado'};
+
 // AUTH
 document.getElementById('lform').addEventListener('submit',async e=>{
   e.preventDefault();
   const btn=document.getElementById('lbtn'),err=document.getElementById('aerr');
-  err.classList.remove('show'); btn.disabled=true; btn.textContent='Entrando...';
+  err.classList.remove('show');btn.disabled=true;btn.textContent='Entrando...';
   try{
     sess=await authReq('POST','token?grant_type=password',{email:document.getElementById('femail').value,password:document.getElementById('fpass').value});
-    if(!sess?.access_token)throw new Error('Resposta inválida do servidor');
+    if(!sess?.access_token)throw new Error('Resposta inválida');
     localStorage.setItem('tgt_sess',JSON.stringify(sess));
     await boot();
-  }catch(ex){
-    console.error('Erro login:', ex);
-    err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');
-  }
+  }catch(ex){err.textContent=ex.message||'E-mail ou senha incorretos.';err.classList.add('show');}
   finally{btn.disabled=false;btn.textContent='Entrar';}
 });
-
-async function doLogout(){
-  localStorage.removeItem('tgt_sess');
-  sess=null;me=null;clearInterval(timerInt);
-  document.getElementById('auth').style.display='flex';
-  document.getElementById('app').style.display='none';
-}
-
+async function doLogout(){localStorage.removeItem('tgt_sess');sess=null;me=null;clearInterval(timerInt);document.getElementById('auth').style.display='flex';document.getElementById('app').style.display='none';}
 async function boot(){
   document.getElementById('auth').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('curdate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
-  await loadAll();
-  buildNav();
-  nav('timer');
+  await loadAll();buildNav();nav('timer');
   const sv=localStorage.getItem('tgt_run');
   if(sv){try{const r=JSON.parse(sv);running=r;timerStart=new Date(r.started_at);timerSec=0;startTick();}catch{localStorage.removeItem('tgt_run');}}
 }
 
-// LOAD ALL DATA
+// LOAD DATA
 async function loadAll(){
   try{
-    const [m,c,p]=await Promise.all([
-      req('GET','tt_members?select=*&order=name',null,tok()),
-      req('GET','tt_clients?select=*&order=name',null,tok()),
-      req('GET','tt_projects?select=*&order=name',null,tok())
-    ]);
+    const[m,c,p]=await Promise.all([req('GET','tt_members?select=*&order=name',null,tok()),req('GET','tt_clients?select=*&order=name',null,tok()),req('GET','tt_projects?select=*&order=name',null,tok())]);
     members=m||[];clients=c||[];projects=p||[];
-
-    // Find current user - try multiple ways
-    const userEmail=sess?.user?.email||sess?.email||null;
-    if(userEmail){
-      me=members.find(m=>m.email===userEmail);
-    }
-    if(!me&&members.length>0){
-      // fallback: find by auth_id
-      const uid=sess?.user?.id||sess?.id;
-      if(uid) me=members.find(m=>m.auth_id===uid);
-    }
-    if(!me&&members.length>0) me=members[0];
-
-    // Load account associations if account role
-    if(me && me.access_level==='account'){
-      const [amc,acc]=await Promise.all([
-        req('GET',`tt_account_members?select=*&account_id=eq.${me.id}`,null,tok()),
-        req('GET',`tt_account_clients?select=*&account_id=eq.${me.id}`,null,tok())
-      ]);
+    const email=sess?.user?.email||sess?.email;
+    if(email)me=members.find(m=>m.email===email);
+    if(!me){const uid=sess?.user?.id||sess?.id;if(uid)me=members.find(m=>m.auth_id===uid);}
+    if(!me&&members.length)me=members[0];
+    if(me&&me.access_level==='account'){
+      const[amc,acc]=await Promise.all([req('GET',`tt_account_members?select=*&account_id=eq.${me.id}`,null,tok()),req('GET',`tt_account_clients?select=*&account_id=eq.${me.id}`,null,tok())]);
       acMembers[me.id]=(amc||[]).map(x=>x.member_id);
       acClients[me.id]=(acc||[]).map(x=>x.client_id);
     }
-
     if(me){
-      const ini=me.name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
-      document.getElementById('uav').textContent=ini;
+      document.getElementById('uav').textContent=me.name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
       document.getElementById('uname').textContent=me.name.split(' ')[0];
-      const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-      document.getElementById('urole').textContent=`${me.team||''} · ${roleLabels[me.access_level]||'User'}`;
+      const rl={admin:'ADM Full',account:'Account',user:'Operador'};
+      document.getElementById('urole').textContent=`${me.team||''} · ${rl[me.access_level]||'User'}`;
     }
-  }catch(ex){
-    console.error('loadAll error:',ex);
-    toast('Erro ao carregar dados: '+ex.message,'error');
-  }
+  }catch(ex){console.error('loadAll:',ex);toast('Erro ao carregar dados','error');}
 }
-
-// FILTERED DATA for current user
-function myClients(){
-  if(isAdmin())return clients;
-  if(me?.access_level==='account')return clients.filter(c=>acClients[me.id]?.includes(c.id));
-  return clients; // user sees all clients (filtered in entries)
-}
-function myMembers(){
-  if(isAdmin())return members;
-  if(me?.access_level==='account')return members.filter(m=>acMembers[me.id]?.includes(m.id));
-  return me?[me]:[];
-}
-function myProjects(clientId){
-  if(!clientId)return projects;
-  return projects.filter(p=>p.client_id===clientId);
-}
+function myClients(){if(isAdmin())return clients;if(me?.access_level==='account')return clients.filter(c=>acClients[me.id]?.includes(c.id));return clients;}
+function myMembers(){if(isAdmin())return members;if(me?.access_level==='account')return members.filter(m=>acMembers[me.id]?.includes(m.id));return me?[me]:[];}
+function myProjects(cid){return cid?projects.filter(p=>p.client_id===cid):projects;}
+function teamBadge(team){const t=(team||'').toLowerCase().replace(/pack/i,'pack');const cls={'t1':'badge-t1','t3':'badge-t3','t4':'badge-t4','pack':'badge-pack','prod':'badge-prod','adm':'badge-adm'};return `<span class="badge ${cls[t]||'badge-adm'}">${team||'—'}</span>`;}
 
 // NAV
 function buildNav(){
   const nav=document.getElementById('mainnav');
-  const roleLabels={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-  const rl=me?.access_level||'user';
-  let html=`
-    <div class="nsec">Principal</div>
-    <div class="ni active" data-p="timer" onclick="nav('timer')">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timer
-    </div>
-    <div class="ni" data-p="entries" onclick="nav('entries')">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Lançamentos
-    </div>`;
-  if(isAccount()){
-    html+=`
-      <div class="nsec">Relatórios</div>
-      <div class="ni" data-p="r-team" onclick="nav('r-team')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Por Time
-      </div>
-      <div class="ni" data-p="r-client" onclick="nav('r-client')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Por Cliente
-      </div>
-      <div class="ni" data-p="r-person" onclick="nav('r-person')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Por Pessoa
-      </div>`;
-  }
-  if(isAdmin()){
-    html+=`
-      <div class="nsec">Admin</div>
-      <div class="ni" data-p="adm-members" onclick="nav('adm-members')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Pessoas
-      </div>
-      <div class="ni" data-p="adm-clients" onclick="nav('adm-clients')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Clientes
-      </div>
-      <div class="ni" data-p="adm-projects" onclick="nav('adm-projects')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Projetos
-      </div>
-      <div class="ni" data-p="adm-accounts" onclick="nav('adm-accounts')">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Permissões
-      </div>`;
-  }
+  let html=`<div class="nsec">Principal</div>
+    <div class="ni active" data-p="timer" onclick="nav('timer')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timer</div>
+    <div class="ni" data-p="entries" onclick="nav('entries')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Lançamentos</div>`;
+  if(isAccount())html+=`<div class="nsec">Relatórios</div>
+    <div class="ni" data-p="r-team" onclick="nav('r-team')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Por Time</div>
+    <div class="ni" data-p="r-client" onclick="nav('r-client')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Por Cliente</div>
+    <div class="ni" data-p="r-person" onclick="nav('r-person')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Por Pessoa</div>`;
+  if(isAdmin())html+=`<div class="nsec">Admin</div>
+    <div class="ni" data-p="adm-members" onclick="nav('adm-members')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Pessoas</div>
+    <div class="ni" data-p="adm-clients" onclick="nav('adm-clients')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Clientes</div>
+    <div class="ni" data-p="adm-projects" onclick="nav('adm-projects')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Projetos</div>
+    <div class="ni" data-p="adm-accounts" onclick="nav('adm-accounts')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Permissões</div>`;
   nav.innerHTML=html;
 }
-
-const TITLES={timer:'Timer',entries:'Lançamentos','r-team':'Por Time','r-client':'Por Cliente','r-person':'Por Pessoa','adm-members':'Pessoas','adm-clients':'Clientes','adm-projects':'Projetos','adm-accounts':'Permissões de Acesso'};
-function nav(page){
-  curPage=page;
-  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.p===page));
-  document.getElementById('pgtitle').textContent=TITLES[page]||page;
-  renderPage();
-}
-
+const TITLES={timer:'Timer',entries:'Relatório Detalhado','r-team':'Por Time','r-client':'Por Cliente','r-person':'Por Pessoa','adm-members':'Pessoas','adm-clients':'Clientes','adm-projects':'Projetos','adm-accounts':'Permissões'};
+function nav(page){curPage=page;document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.p===page));document.getElementById('pgtitle').textContent=TITLES[page]||page;renderPage();}
 async function renderPage(){
   const el=document.getElementById('pg');
   el.innerHTML='<div class="lc"><div class="spin"></div><span>Carregando...</span></div>';
-  try{
-    const pages={
-      timer:pgTimer,entries:pgEntries,'r-team':pgRTeam,'r-client':pgRClient,'r-person':pgRPerson,
-      'adm-members':pgAdmMembers,'adm-clients':pgAdmClients,'adm-projects':pgAdmProjects,'adm-accounts':pgAdmAccounts
-    };
-    if(pages[curPage]) await pages[curPage](el);
-    else el.innerHTML='<div class="empty">Página não encontrada</div>';
-  }catch(ex){el.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;console.error(ex);}
+  try{const pages={timer:pgTimer,entries:pgEntries,'r-team':pgRTeam,'r-client':pgRClient,'r-person':pgRPerson,'adm-members':pgAdmMembers,'adm-clients':pgAdmClients,'adm-projects':pgAdmProjects,'adm-accounts':pgAdmAccounts};
+  if(pages[curPage])await pages[curPage](el);else el.innerHTML='<div class="empty">Página não encontrada</div>';}catch(ex){el.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;console.error(ex);}
 }
 
 // TIMER
-function startTick(){
-  clearInterval(timerInt);
-  timerInt=setInterval(()=>{if(timerStart){timerSec=(Date.now()-timerStart.getTime())/1000;updClock();}},1000);
-}
-function updClock(){
-  const el=document.getElementById('tclock');if(!el)return;
-  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=Math.floor(timerSec%60);
-  el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  el.className='tclock'+(running?' on':'');
-}
+function startTick(){clearInterval(timerInt);timerInt=setInterval(()=>{if(timerStart){timerSec=(Date.now()-timerStart.getTime())/1000;updClock();}},1000);}
+function updClock(){const el=document.getElementById('tclock');if(!el)return;const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=Math.floor(timerSec%60);el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;el.className='tclock'+(running?' on':'');}
+
 async function startTimer(){
   const desc=document.getElementById('tdesc')?.value?.trim();
   const cid=document.getElementById('tclient')?.value;
@@ -563,34 +497,50 @@ async function startTimer(){
   if(!desc){toast('Informe uma descrição','error');return;}
   if(!cid){toast('Selecione um cliente','error');return;}
   if(!me){toast('Membro não encontrado','error');return;}
+  // Check if user already has a running entry in DB
+  try{
+    const check=await req('GET',`tt_time_entries?member_id=eq.${me.id}&is_running=eq.true&select=id,description`,null,tok());
+    if(check&&check.length>0){
+      // Auto-stop the running entry first
+      const now=new Date().toISOString();
+      await req('PATCH',`tt_time_entries?id=eq.${check[0].id}`,{is_running:false,ended_at:now},tok());
+      toast(`Timer anterior parado: "${check[0].description.substring(0,30)}"`, 'info');
+    }
+  }catch{}
   const now=new Date().toISOString();
   running={description:desc,client_id:cid,project_id:pid||null,member_id:me.id,started_at:now,date:now.split('T')[0]};
   timerStart=new Date(now);timerSec=0;
   localStorage.setItem('tgt_run',JSON.stringify(running));
-  startTick();renderTimerBtns();toast('Timer iniciado','success');
+  startTick();renderPage();toast('Timer iniciado','success');
 }
+
 async function stopTimer(){
   if(!running||!timerStart)return;
   clearInterval(timerInt);
   const hours=timerSec/3600;
-  if(hours<0.01){toast('Tempo muito curto','error');resetTimer();return;}
+  if(hours<0.003){toast('Tempo muito curto (mín. 10s)','error');resetTimer();return;}
   try{
-    await req('POST','tt_time_entries',{description:running.description,client_id:running.client_id,project_id:running.project_id||null,member_id:running.member_id,date:running.date,hours:Math.round(hours*100)/100,started_at:running.started_at,ended_at:new Date().toISOString()},tok());
+    await req('POST','tt_time_entries',{description:running.description,client_id:running.client_id,project_id:running.project_id||null,member_id:running.member_id,date:running.date,hours:Math.round(hours*100)/100,duration_minutes:Math.round(timerSec/60*100)/100,started_at:running.started_at,ended_at:new Date().toISOString(),is_running:false,is_manual:false},tok());
     toast(`${fmtH(hours)} registradas`,'success');resetTimer();
-    if(curPage==='entries')renderPage();else loadToday();
+    if(curPage==='entries')renderPage();else if(curPage==='timer')renderPage();
   }catch(ex){toast('Erro: '+ex.message,'error');}
 }
-function resetTimer(){running=null;timerStart=null;timerSec=0;localStorage.removeItem('tgt_run');clearInterval(timerInt);updClock();renderTimerBtns();}
-function renderTimerBtns(){
-  const s=document.getElementById('tbtnstart'),p=document.getElementById('tbtinstop');
-  if(!s||!p)return;
-  s.style.display=running?'none':'flex';p.style.display=running?'flex':'none';
-}
-function onTimerClientChange(){
-  const cid=document.getElementById('tclient')?.value;
-  const ps=document.getElementById('tproject');if(!ps)return;
-  const projs=myProjects(cid);
-  ps.innerHTML='<option value="">Sem projeto</option>'+projs.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+function resetTimer(){running=null;timerStart=null;timerSec=0;localStorage.removeItem('tgt_run');clearInterval(timerInt);}
+function onTimerClientChange(){const cid=document.getElementById('tclient')?.value;const ps=document.getElementById('tproject');if(!ps)return;ps.innerHTML='<option value="">Sem projeto</option>'+myProjects(cid).map(p=>`<option value="${p.id}">${p.name}</option>`).join('');}
+
+// RESUME TIMER from existing entry
+async function resumeEntry(id){
+  const e=allEntries.find(x=>x.id===id);
+  if(!e)return;
+  // If there's already a timer running, stop it first
+  if(running)await stopTimer();
+  const now=new Date().toISOString();
+  running={description:e.description||'',client_id:e.client_id,project_id:e.project_id||null,member_id:me.id,started_at:now,date:now.split('T')[0]};
+  timerStart=new Date(now);timerSec=0;
+  localStorage.setItem('tgt_run',JSON.stringify(running));
+  startTick();
+  toast('Timer retomado: "'+e.description?.substring(0,30)+'"','success');
+  if(curPage==='timer')renderPage();
 }
 
 // PAGE: TIMER
@@ -600,24 +550,24 @@ async function pgTimer(el){
   el.innerHTML=`
     <div class="tbar">
       <input class="tinp" id="tdesc" placeholder="O que está trabalhando?" value="${running?.description||''}" ${running?'disabled':''}>
-      <select class="tsel" id="tclient" onchange="onTimerClientChange()" ${running?'disabled':''}><option value="">Selecionar cliente</option>${cOpts}</select>
-      <select class="tsel" id="tproject" ${running?'disabled':''}><option value="">Sem projeto</option></select>
+      <select class="tsel" id="tclient" onchange="onTimerClientChange()" ${running?'disabled':''}><option value="">Cliente</option>${cOpts}</select>
+      <select class="tsel" id="tproject" ${running?'disabled':''}><option value="">Projeto</option></select>
       <span class="tclock${running?' on':''}" id="tclock">00:00:00</span>
       <button class="bgo" id="tbtnstart" onclick="startTimer()" style="${running?'display:none':'display:flex'}">
         <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Iniciar
       </button>
-      <button class="bgo bstop" id="tbtinstop" onclick="stopTimer()" style="${running?'display:flex':'display:none'}">
+      <button class="bgo bstop" id="tbtnstop" onclick="stopTimer()" style="${running?'display:flex':'display:none'}">
         <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Parar
       </button>
     </div>
     <div class="sgrid">
       <div class="sc"><div class="slbl">Hoje</div><div class="sval" id="st-t">—</div><div class="ssub">horas registradas</div></div>
       <div class="sc"><div class="slbl">Essa Semana</div><div class="sval" id="st-w">—</div><div class="ssub">horas</div></div>
-      <div class="sc"><div class="slbl">Mês Atual</div><div class="sval" id="st-m">—</div><div class="ssub" id="st-ms">de — meta</div><div class="sprog"><div class="sprogb" id="st-mb" style="width:0%"></div></div></div>
-      <div class="sc"><div class="slbl">Timer</div><div class="sval" style="color:${running?'var(--red)':'var(--gray2)'}">●</div><div class="ssub">${running?'Rodando':'Parado'}</div></div>
+      <div class="sc"><div class="slbl">Mês Atual</div><div class="sval" id="st-m">—</div><div class="ssub" id="st-ms">meta</div><div class="sprog"><div class="sprogb" id="st-mb" style="width:0%"></div></div></div>
+      <div class="sc"><div class="slbl">Status</div><div class="sval" style="color:${running?'var(--red)':'var(--gray2)'}"><span class="${running?'rdot':''}"></span>${running?'Rodando':'Parado'}</div><div class="ssub">${running?running.description?.substring(0,25)+'...':'nenhum timer ativo'}</div></div>
     </div>
     <div class="sh">
-      <span class="stitle">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}<span class="refresh-dot" title="Atualiza a cada 30s"></span></span>
+      <span class="stitle">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</span>
       <button class="bsmr" onclick="openNewEntry()">+ Manual</button>
     </div>
     <div id="twrap"></div>`;
@@ -625,7 +575,6 @@ async function pgTimer(el){
   else{onTimerClientChange();}
   loadToday();
 }
-
 async function loadToday(){
   if(curPage!=='timer')return;
   const today=new Date().toISOString().split('T')[0];
@@ -633,209 +582,208 @@ async function loadToday(){
     let q=`tt_time_entries?select=*,member:tt_members(id,name),client:tt_clients(id,name),project:tt_projects(id,name)&date=eq.${today}&order=created_at.desc`;
     if(me?.access_level==='user')q+=`&member_id=eq.${me.id}`;
     const data=await req('GET',q,null,tok())||[];
-    // Separate completed vs running
     const completed=data.filter(e=>!e.is_running);
-    const runningEntries=data.filter(e=>e.is_running);
+    const runningE=data.filter(e=>e.is_running);
     loadStats(completed);
     const w=document.getElementById('twrap');if(!w)return;
     let html='';
-    if(runningEntries.length){
-      html+=`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center"><span class="running-dot"></span>Em andamento (${runningEntries.length})</div>`;
-      html+=buildRunningTable(runningEntries);
-      html+='</div>';
+    if(runningE.length){
+      html+=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center"><span class="rdot"></span>Em andamento (${runningE.length})</div>`;
+      html+=`<div class="tw"><table><thead><tr><th>Descrição</th><th>Cliente</th><th>Pessoa</th><th>Início</th><th>Status</th></tr></thead><tbody>`;
+      runningE.forEach(e=>{
+        const st=e.started_at?new Date(e.started_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—';
+        html+=`<tr class="running-row"><td>${e.description||'—'}</td><td>${e.client?.name||'—'}</td><td>${teamBadge(e.member?.team||'')} ${e.member?.name?.split(' ')[0]||'—'}</td><td class="tg">${st}</td><td><span class="running-badge"><span class="rdot"></span>Rodando</span></td></tr>`;
+      });
+      html+='</tbody></table></div></div>';
     }
     if(completed.length){
-      html+=buildTable(completed,me?.access_level!=='user');
+      allEntries=completed;
+      html+=buildTable(completed,me?.access_level!=='user',false,true);
     }
-    if(!completed.length&&!runningEntries.length){
-      html='<div class="empty"><div class="empty-icon">⏱</div>Nenhum lançamento hoje.<br><span style="font-size:11px;color:var(--gray2);margin-top:4px;display:block">Use o timer acima ou adicione manualmente</span></div>';
-    }
+    if(!completed.length&&!runningE.length) html='<div class="empty">Nenhum lançamento hoje. Use o timer ou adicione manualmente.</div>';
     w.innerHTML=html;
   }catch(ex){console.error(ex);}
 }
-// Auto-refresh every 30s when on timer page
+// Auto-refresh timer page
 setInterval(()=>{if(curPage==='timer'&&!document.hidden)loadToday();},30000);
 
 async function loadStats(todayD){
   try{
-    const today=new Date(),ws=new Date(today);ws.setDate(today.getDate()-today.getDay()+1);
-    const th=(todayD||[]).filter(e=>!e.is_running).reduce((a,e)=>a+(e.hours||0),0);
-    if(document.getElementById('st-t'))document.getElementById('st-t').textContent=fmtH(th);
+    const today=new Date(),ws=new Date(today);ws.setDate(today.getDate()-(today.getDay()||7)+1);
+    const th=todayD.reduce((a,e)=>a+(e.hours||0),0);
+    const el=document.getElementById('st-t');if(el)el.textContent=fmtH(th);
     if(!me)return;
-    const wD=await req('GET',`tt_time_entries?select=hours,is_running&date=gte.${ws.toISOString().split('T')[0]}&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
-    if(document.getElementById('st-w'))document.getElementById('st-w').textContent=fmtH(wD.reduce((a,e)=>a+(e.hours||0),0));
-    const mD=await req('GET',`tt_time_entries?select=hours,is_running&date=gte.${fMonth}-01&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
+    const wD=await req('GET',`tt_time_entries?select=hours&date=gte.${ws.toISOString().split('T')[0]}&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
+    const elw=document.getElementById('st-w');if(elw)elw.textContent=fmtH(wD.reduce((a,e)=>a+(e.hours||0),0));
+    const mo=today.toISOString().slice(0,7);
+    const mD=await req('GET',`tt_time_entries?select=hours&date=gte.${mo}-01&member_id=eq.${me.id}&is_running=eq.false`,null,tok())||[];
     const mH=mD.reduce((a,e)=>a+(e.hours||0),0),cap=me.capacity_hours_month||140,pct=Math.min(100,Math.round(mH/cap*100));
-    if(document.getElementById('st-m'))document.getElementById('st-m').textContent=fmtH(mH);
-    if(document.getElementById('st-ms'))document.getElementById('st-ms').textContent=`de ${cap}h meta (${pct}%)`;
-    if(document.getElementById('st-mb'))document.getElementById('st-mb').style.width=pct+'%';
+    const elm=document.getElementById('st-m');if(elm)elm.textContent=fmtH(mH);
+    const elms=document.getElementById('st-ms');if(elms)elms.textContent=`de ${cap}h meta (${pct}%)`;
+    const elmb=document.getElementById('st-mb');if(elmb)elmb.style.width=pct+'%';
   }catch{}
 }
 
-// PAGE: ENTRIES
+// PAGE: ENTRIES (Detailed Report)
 async function pgEntries(el){
   const mc=myClients(),mm=myMembers();
-  const mOpts=buildMoOpts();
-  const mbOpts='<option value="">Todos</option>'+mm.map(m=>`<option value="${m.id}">${m.name.split(' ')[0]}</option>`).join('');
-  const clOpts='<option value="">Todos</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  const prOpts='<option value="">Todos</option>'+projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  const teams=[...new Set(members.map(m=>m.team).filter(Boolean))].sort();
   el.innerHTML=`
     <div class="filters">
-      <select class="fsel" id="f-mo" onchange="onFC()">${mOpts}</select>
-      <select class="fsel" id="f-mb" onchange="onFC()">${mbOpts}</select>
-      <select class="fsel" id="f-cl" onchange="onFC()">${clOpts}</select>
-      <select class="fsel" id="f-pr" onchange="onFC()">${prOpts}</select>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        ${Object.entries(DATE_LABELS).map(([k,v])=>`<button class="fbtn${dateRange===k?' active':''}" onclick="setDateRange('${k}')">${v}</button>`).join('')}
+      </div>
+    </div>
+    <div class="filters" id="custom-range" style="display:${dateRange==='custom'?'flex':'none'}">
+      <input type="date" class="fsel" id="f-from" value="${customFrom||getDateRange().from}" onchange="customFrom=this.value;loadETable()">
+      <span style="color:var(--gray);font-size:12px">até</span>
+      <input type="date" class="fsel" id="f-to" value="${customTo||getDateRange().to}" onchange="customTo=this.value;loadETable()">
+    </div>
+    <div class="filters">
+      ${isAccount()?`<select class="fsel" id="f-team" onchange="fTeam=this.value;loadETable()"><option value="">Time: Todos</option>${teams.map(t=>`<option value="${t}"${fTeam===t?' selected':''}>${t}</option>`).join('')}</select>`:''}
+      <select class="fsel" id="f-cl" onchange="fClient=this.value;loadETable()"><option value="">Cliente: Todos</option>${mc.map(c=>`<option value="${c.id}"${fClient===c.id?' selected':''}>${c.name}</option>`).join('')}</select>
+      ${isAccount()?`<select class="fsel" id="f-mb" onchange="fMember=this.value;loadETable()"><option value="">Pessoa: Todos</option>${mm.map(m=>`<option value="${m.id}"${fMember===m.id?' selected':''}>${m.name.split(' ').slice(0,2).join(' ')}</option>`).join('')}</select>`:''}
+      <select class="fsel" id="f-pr" onchange="fProject=this.value;loadETable()"><option value="">Projeto: Todos</option>${projects.map(p=>`<option value="${p.id}"${fProject===p.id?' selected':''}>${p.name}</option>`).join('')}</select>
+      <div class="fdivider"></div>
       <button class="bsm" onclick="exportCsv()">↓ CSV</button>
       <button class="bsmr" onclick="openNewEntry()" style="margin-left:auto">+ Novo</button>
     </div>
     <div id="etable"></div>`;
-  document.getElementById('f-mo').value=fMonth;
-  document.getElementById('f-mb').value=fMember;
-  document.getElementById('f-cl').value=fClient;
-  document.getElementById('f-pr').value=fProject;
   await loadETable();
 }
+function setDateRange(r){dateRange=r;document.querySelectorAll('.fbtn').forEach(b=>b.classList.toggle('active',b.textContent===DATE_LABELS[r]));const cr=document.getElementById('custom-range');if(cr)cr.style.display=r==='custom'?'flex':'none';loadETable();}
 
-let allEntries=[];
 async function loadETable(){
   const w=document.getElementById('etable');if(!w)return;
   w.innerHTML='<div class="lc"><div class="spin"></div></div>';
   try{
-    let q=`tt_time_entries?select=*,member:tt_members(id,name,team),client:tt_clients(id,name),project:tt_projects(id,name)&order=date.desc,created_at.desc`;
-    if(fMonth)q+=`&date=gte.${fMonth}-01&date=lte.${fMonth}-31`;
+    const{from,to}=getDateRange();
+    let q=`tt_time_entries?select=*,member:tt_members(id,name,team),client:tt_clients(id,name),project:tt_projects(id,name)&order=date.desc,created_at.desc&is_running=eq.false&date=gte.${from}&date=lte.${to}`;
     if(fMember)q+=`&member_id=eq.${fMember}`;
     else if(me?.access_level==='user')q+=`&member_id=eq.${me.id}`;
     if(fClient)q+=`&client_id=eq.${fClient}`;
     if(fProject)q+=`&project_id=eq.${fProject}`;
-    // For account: filter to their members/clients
     allEntries=await req('GET',q,null,tok())||[];
-    if(me?.access_level==='account'&&!fMember){
-      const mids=acMembers[me.id]||[];
-      allEntries=allEntries.filter(e=>mids.includes(e.member_id));
-    }
-    if(!allEntries.length){w.innerHTML='<div class="empty"><div class="empty-icon">📋</div>Nenhum lançamento encontrado.</div>';return;}
-    const completed=allEntries.filter(e=>!e.is_running);
-    const runningE=allEntries.filter(e=>e.is_running);
-    const tot=completed.reduce((a,e)=>a+(e.hours||0),0);
-    let html=`<div style="margin-bottom:10px;font-size:12px;color:var(--gray)">${completed.length} lançamentos · <strong style="color:var(--w)">${fmtH(tot)} total</strong>${runningE.length?` · <span style="color:var(--red)">${runningE.length} em andamento</span>`:''}</div>`;
-    if(runningE.length) html+=`<div style="margin-bottom:12px">${buildRunningTable(runningE)}</div>`;
-    if(completed.length) html+=buildTable(completed,true,true);
+    if(me?.access_level==='account'&&!fMember){const mids=acMembers[me.id]||[];allEntries=allEntries.filter(e=>mids.includes(e.member_id));}
+    if(fTeam)allEntries=allEntries.filter(e=>e.member?.team===fTeam);
+    if(!allEntries.length){w.innerHTML='<div class="empty">Nenhum lançamento no período selecionado.</div>';return;}
+    const tot=allEntries.reduce((a,e)=>a+(e.hours||0),0);
+    // Group by day
+    const days={};
+    allEntries.forEach(e=>{const d=e.date||'sem-data';if(!days[d])days[d]=[];days[d].push(e);});
+    let html=`<div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--gray)">${allEntries.length} lançamentos</span>
+      <span style="font-size:14px;font-weight:700">${fmtH(tot)} total</span>
+    </div>`;
+    Object.entries(days).forEach(([date,entries])=>{
+      const dayTot=entries.reduce((a,e)=>a+(e.hours||0),0);
+      const dayLabel=fmtDate(date);
+      html+=`<div class="day-group">
+        <div class="day-header"><span class="day-header-date">${dayLabel}</span><span class="day-header-total">${fmtH(dayTot)}</span></div>
+        <div class="day-entries"><table><tbody>`;
+      entries.forEach(e=>{
+        html+=`<tr>
+          <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
+          <td>${e.client?.name||'—'}</td>
+          <td class="tg">${e.project?.name||'—'}</td>
+          ${isAccount()?`<td>${teamBadge(e.member?.team)} ${e.member?.name?.split(' ')[0]||'—'}</td>`:''}
+          <td class="tr">${fmtH(e.hours||0)}</td>
+          <td style="white-space:nowrap">
+            <button class="bsm" onclick="resumeEntry('${e.id}')" title="Retomar" style="padding:4px 8px;font-size:11px;margin-right:2px;color:var(--green)">▶</button>
+            <button class="bsm" onclick="editEntry('${e.id}')" style="padding:4px 8px;font-size:11px;margin-right:2px">✎</button>
+            <button class="bsm" onclick="delEntry('${e.id}')" style="padding:4px 8px;font-size:11px;color:var(--gray2)">✕</button>
+          </td>
+        </tr>`;
+      });
+      html+='</tbody></table></div></div>';
+    });
     w.innerHTML=html;
   }catch(ex){w.innerHTML=`<div class="empty">Erro: ${ex.message}</div>`;}
 }
 
-function onFC(){
-  fMonth=document.getElementById('f-mo')?.value||fMonth;
-  fMember=document.getElementById('f-mb')?.value||'';
-  fClient=document.getElementById('f-cl')?.value||'';
-  fProject=document.getElementById('f-pr')?.value||'';
-  loadETable();
-}
-
-function buildRunningTable(data){
+function buildTable(data,showM,showProject,showResume){
   return `<div class="tw"><table>
-    <thead><tr><th>Descrição</th><th>Cliente</th><th>Pessoa</th><th>Início</th><th>Status</th></tr></thead>
-    <tbody>${data.map(e=>{
-      const startTime=e.started_at?new Date(e.started_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—';
-      return `<tr class="running-row">
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
-        <td>${e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'—'}</td>
-        <td><span class="badge">${e.member?.name?.split(' ')[0]||'—'}</span></td>
-        <td class="tg">${startTime}</td>
-        <td><span class="running-badge"><span class="running-dot"></span>Rodando</span></td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table></div>`;
-}
-function buildTable(data,showM,showProject){
-  return `<div class="tw"><table>
-    <thead><tr>
-      <th>Data</th><th>Descrição</th><th>Cliente</th>
-      ${showProject?'<th>Projeto</th>':''}
-      ${showM?'<th>Pessoa</th>':''}
-      <th>Horas</th><th></th>
-    </tr></thead>
+    <thead><tr><th>Data</th><th>Descrição</th><th>Cliente</th>${showProject?'<th>Projeto</th>':''}${showM?'<th>Pessoa</th>':''}<th>Horas</th><th></th></tr></thead>
     <tbody>${data.map(e=>`<tr>
       <td class="tg">${fmtD(e.date)}</td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description||'—'}</td>
       <td>${e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'—'}</td>
       ${showProject?`<td class="tg">${e.project?.name||'—'}</td>`:''}
-      ${showM?`<td><span class="badge">${e.member?.name?.split(' ')[0]||'—'}</span></td>`:''}
-      <td class="tr hours-cell">${fmtH(e.hours||0)}</td>
+      ${showM?`<td>${teamBadge(e.member?.team||'')} ${e.member?.name?.split(' ')[0]||'—'}</td>`:''}
+      <td class="tr">${fmtH(e.hours||0)}</td>
       <td style="white-space:nowrap">
-        <button class="bsm" onclick="editEntry('${e.id}')" style="padding:4px 8px;font-size:11px;margin-right:4px">✎</button>
+        ${showResume?`<button class="bsm" onclick="resumeEntry('${e.id}')" title="Retomar" style="padding:4px 8px;font-size:11px;margin-right:2px;color:var(--green)">▶</button>`:''}
+        <button class="bsm" onclick="editEntry('${e.id}')" style="padding:4px 8px;font-size:11px;margin-right:2px">✎</button>
         <button class="bsm" onclick="delEntry('${e.id}')" style="padding:4px 8px;font-size:11px;color:var(--gray2)">✕</button>
       </td>
     </tr>`).join('')}</tbody>
   </table></div>`;
 }
 
-// PAGE: REPORTS
+// REPORT DATA FETCHER
+async function fetchReportData(){
+  const{from,to}=getDateRange();
+  let q=`tt_time_entries?select=*&order=date.desc&is_running=eq.false&date=gte.${from}&date=lte.${to}`;
+  if(me?.access_level==='account'){const mids=(acMembers[me.id]||[]).join(',');if(mids)q+=`&member_id=in.(${mids})`;}
+  return req('GET',q,null,tok());
+}
+
+// REPORT FILTERS BAR
+function reportFilters(){
+  return `<div class="filters">
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      ${Object.entries(DATE_LABELS).map(([k,v])=>`<button class="fbtn${dateRange===k?' active':''}" onclick="setReportRange('${k}')">${v}</button>`).join('')}
+    </div>
+  </div>
+  <div class="filters" id="custom-range-r" style="display:${dateRange==='custom'?'flex':'none'}">
+    <input type="date" class="fsel" id="fr-from" value="${customFrom||getDateRange().from}" onchange="customFrom=this.value;renderPage()">
+    <span style="color:var(--gray);font-size:12px">até</span>
+    <input type="date" class="fsel" id="fr-to" value="${customTo||getDateRange().to}" onchange="customTo=this.value;renderPage()">
+  </div>`;
+}
+function setReportRange(r){dateRange=r;renderPage();}
+
+// PAGE: BY TEAM
 async function pgRTeam(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rt-mo" onchange="fMonth=this.value;pgRTeam(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rtc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rt-mo').value=fMonth;
-  const month=document.getElementById('rt-mo').value;
-  const data=await fetchReportData(month)||[];
+  el.innerHTML=reportFilters()+'<div id="rtc" class="lc"><div class="spin"></div></div>';
+  const data=await fetchReportData()||[];
   const rc=document.getElementById('rtc');if(!rc)return;
   const teams=['T1','T3','T4','Pack','PROD','ADM'],td={};
   teams.forEach(t=>td[t]={h:0,mb:{}});
-  data.forEach(e=>{
-    const m=members.find(x=>x.id===e.member_id),team=m?.team||'ADM';
-    if(!td[team])td[team]={h:0,mb:{}};
-    td[team].h+=e.hours||0;
-    if(!td[team].mb[e.member_id])td[team].mb[e.member_id]={name:m?.name||'?',h:0};
-    td[team].mb[e.member_id].h+=e.hours||0;
-  });
-  rc.className='rgrid';
-  rc.innerHTML=teams.filter(t=>td[t].h>0).map(t=>{
+  data.forEach(e=>{const m=members.find(x=>x.id===e.member_id),team=m?.team||'ADM';if(!td[team])td[team]={h:0,mb:{}};td[team].h+=e.hours||0;if(!td[team].mb[e.member_id])td[team].mb[e.member_id]={name:m?.name||'?',h:0};td[team].mb[e.member_id].h+=e.hours||0;});
+  const totalH=data.reduce((a,e)=>a+(e.hours||0),0);
+  rc.className='';
+  rc.innerHTML=`<div style="margin-bottom:16px;font-size:14px;font-weight:700">Total: ${fmtH(totalH)}</div><div class="rgrid">${teams.filter(t=>td[t].h>0).map(t=>{
     const tv=td[t],mbs=Object.values(tv.mb).sort((a,b)=>b.h-a.h);
-    return `<div class="rc"><div class="rct">${t} — ${fmtH(tv.h)}</div>
-      ${mbs.map(m=>`<div class="rrow"><span class="rname">${m.name.split(' ').slice(0,2).join(' ')}</span><div class="rbarw"><div class="rbar" style="width:${Math.round(m.h/tv.h*100)}%"></div></div><span class="rhours">${fmtH(m.h)}</span></div>`).join('')}
-    </div>`;
-  }).join('');
+    return `<div class="rc"><div class="rct">${teamBadge(t)} ${t} — ${fmtH(tv.h)}</div>${mbs.map(m=>`<div class="rrow"><span class="rname">${m.name.split(' ').slice(0,2).join(' ')}</span><div class="rbarw"><div class="rbar" style="width:${Math.round(m.h/tv.h*100)}%"></div></div><span class="rhours">${fmtH(m.h)}</span></div>`).join('')}</div>`;
+  }).join('')}</div>`;
 }
 
+// PAGE: BY CLIENT
 async function pgRClient(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rc-mo" onchange="fMonth=this.value;pgRClient(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rcc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rc-mo').value=fMonth;
-  const month=document.getElementById('rc-mo').value;
-  const data=await fetchReportData(month)||[];
+  el.innerHTML=reportFilters()+'<div id="rcc" class="lc"><div class="spin"></div></div>';
+  const data=await fetchReportData()||[];
   const rc=document.getElementById('rcc');if(!rc)return;
   const cd={};
-  data.forEach(e=>{
-    if(!cd[e.client_id]){const c=clients.find(c=>c.id===e.client_id);cd[e.client_id]={name:c?.name||'?',team:c?.team||'—',target:c?.target_hours_month||0,h:0,projs:{}};}
-    cd[e.client_id].h+=e.hours||0;
-    const pn=projects.find(p=>p.id===e.project_id)?.name||'Sem projeto';
-    if(!cd[e.client_id].projs[pn])cd[e.client_id].projs[pn]=0;
-    cd[e.client_id].projs[pn]+=e.hours||0;
-  });
+  data.forEach(e=>{if(!cd[e.client_id]){const c=clients.find(c=>c.id===e.client_id);cd[e.client_id]={name:c?.name||'?',team:c?.team||'—',target:c?.target_hours_month||0,h:0};}cd[e.client_id].h+=e.hours||0;});
   const sorted=Object.values(cd).sort((a,b)=>b.h-a.h);
   rc.className='';
   rc.innerHTML=`<div class="tw"><table>
-    <thead><tr><th>Cliente</th><th>Time</th><th>Meta</th><th>Realizado</th><th>%</th><th>Top Projeto</th></tr></thead>
+    <thead><tr><th>Cliente</th><th>Time</th><th>Meta</th><th>Realizado</th><th>%</th></tr></thead>
     <tbody>${sorted.map(c=>{
       const pct=c.target>0?Math.round(c.h/c.target*100):null;
       const col=pct!=null?(pct>=100?'var(--green)':pct>=70?'var(--amber)':'var(--red)'):'var(--gray)';
-      const topProj=Object.entries(c.projs).sort((a,b)=>b[1]-a[1])[0];
-      return `<tr><td style="font-weight:600">${c.name}</td><td><span class="badge">${c.team}</span></td><td class="tg">${c.target?fmtH(c.target):'—'}</td><td class="tr">${fmtH(c.h)}</td><td style="color:${col};font-weight:700">${pct!=null?pct+'%':'—'}</td><td class="tg" style="font-size:11px">${topProj?topProj[0]:'—'}</td></tr>`;
-    }).join('')}</tbody>
-  </table></div>`;
+      return `<tr><td style="font-weight:600">${c.name}</td><td>${teamBadge(c.team)}</td><td class="tg">${c.target?fmtH(c.target):'—'}</td><td class="tr">${fmtH(c.h)}</td><td style="color:${col};font-weight:700">${pct!=null?pct+'%':'—'}</td></tr>`;
+    }).join('')}</tbody></table></div>`;
 }
 
+// PAGE: BY PERSON
 async function pgRPerson(el){
-  el.innerHTML=`<div class="filters"><select class="fsel" id="rp-mo" onchange="fMonth=this.value;pgRPerson(document.getElementById('pg'))">${buildMoOpts()}</select></div><div id="rpc" class="lc"><div class="spin"></div></div>`;
-  document.getElementById('rp-mo').value=fMonth;
-  const month=document.getElementById('rp-mo').value;
-  const data=await fetchReportData(month)||[];
+  el.innerHTML=reportFilters()+'<div id="rpc" class="lc"><div class="spin"></div></div>';
+  const data=await fetchReportData()||[];
   const rc=document.getElementById('rpc');if(!rc)return;
   const md={};
-  data.forEach(e=>{
-    if(!md[e.member_id]){const m=members.find(m=>m.id===e.member_id);md[e.member_id]={name:m?.name||'?',team:m?.team||'—',cap:m?.capacity_hours_month||140,h:0,cls:{}};}
-    md[e.member_id].h+=e.hours||0;
-    const cn=clients.find(c=>c.id===e.client_id)?.name||'?';
-    if(!md[e.member_id].cls[cn])md[e.member_id].cls[cn]=0;
-    md[e.member_id].cls[cn]+=e.hours||0;
-  });
+  data.forEach(e=>{if(!md[e.member_id]){const m=members.find(m=>m.id===e.member_id);md[e.member_id]={name:m?.name||'?',team:m?.team||'—',cap:m?.capacity_hours_month||140,h:0,cls:{}};}md[e.member_id].h+=e.hours||0;const cn=clients.find(c=>c.id===e.client_id)?.name||'?';if(!md[e.member_id].cls[cn])md[e.member_id].cls[cn]=0;md[e.member_id].cls[cn]+=e.hours||0;});
   const sorted=Object.values(md).sort((a,b)=>b.h-a.h);
   rc.className='rgrid';
   rc.innerHTML=sorted.map(m=>{
@@ -843,11 +791,11 @@ async function pgRPerson(el){
     const bc=pct>=80?'var(--green)':'var(--red)';
     const top=Object.entries(m.cls).sort((a,b)=>b[1]-a[1]).slice(0,4);
     return `<div class="rc">
-      <div class="rct">${m.name.split(' ').slice(0,2).join(' ')} · <span style="color:var(--gray)">${m.team}</span></div>
+      <div class="rct">${m.name.split(' ').slice(0,2).join(' ')} · ${teamBadge(m.team)}</div>
       <div style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
           <span style="color:var(--gray)">Utilização</span>
-          <span style="font-weight:700;color:${bc}">${fmtH(m.h)}/${m.cap}h <span style="color:var(--gray)">(${pct}%)</span></span>
+          <span style="font-weight:700;color:${bc}">${fmtH(m.h)}/${m.cap}h (${pct}%)</span>
         </div>
         <div class="sprog"><div class="sprogb" style="width:${pct}%;background:${bc}"></div></div>
       </div>
@@ -856,347 +804,147 @@ async function pgRPerson(el){
   }).join('');
 }
 
-async function fetchReportData(month){
-  let q=`tt_time_entries?select=*&order=date.desc`;
-  if(month)q+=`&date=gte.${month}-01&date=lte.${month}-31`;
-  if(me?.access_level==='account'){
-    const mids=(acMembers[me.id]||[]).join(',');
-    if(mids)q+=`&member_id=in.(${mids})`;
-  }
-  return req('GET',q,null,tok());
-}
-
-// ADMIN PAGES
+// ADMIN: MEMBERS
 async function pgAdmMembers(el){
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
-    <div class="tw"><table>
-      <thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th>Monday ID</th><th></th></tr></thead>
-      <tbody>${members.map(m=>{
-        const rl={admin:'ADM Full',account:'Account',user:'Operador',executor:'Operador',prod:'PROD'};
-        const rc={admin:'rb-admin',account:'rb-account',user:'rb-user',executor:'rb-user',prod:'rb-user'};
-        const al=m.access_level||'user';
-        const fn=m.job_title&&!['executor','account','admin','user','prod'].includes(m.job_title)?m.job_title:'—';
-        return `<tr>
-          <td style="font-weight:600">${m.name}</td>
-          <td><span class="badge">${m.team||'—'}</span></td>
-          <td><span class="role-badge ${rc[al]||'rb-user'}">${rl[al]||'User'}</span></td>
-          <td class="tg">${fn}</td>
-          <td class="tg">${m.capacity_hours_month||140}h</td>
-          <td class="tg" style="font-size:11px">${m.email||'—'}</td>
-          <td class="tg" style="font-size:10px;font-family:monospace">${m.monday_user_id||'—'}</td>
-          <td style="white-space:nowrap">
-            <button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
-            <button class="bsm" onclick="confirmDelMember(this)" data-id="${m.id}" data-name="${m.name.replace(/"/g,'')}" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button>
-          </td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+  el.innerHTML=`<div class="sh"><span class="stitle">${members.length} pessoas</span><button class="bsmr" onclick="openNewMember()">+ Nova</button></div>
+    <div class="tw"><table><thead><tr><th>Nome</th><th>Time</th><th>Nível</th><th>Função</th><th>Cap.</th><th>E-mail</th><th>Monday ID</th><th></th></tr></thead>
+    <tbody>${members.map(m=>{const rl={admin:'ADM Full',account:'Account',user:'Operador'};const rc={admin:'rb-admin',account:'rb-account',user:'rb-user'};const al=m.access_level||'user';
+    return `<tr><td style="font-weight:600">${m.name}</td><td>${teamBadge(m.team)}</td><td><span class="role-badge ${rc[al]||'rb-user'}">${rl[al]||'User'}</span></td>
+    <td class="tg">${m.job_title||'—'}</td><td class="tg">${m.capacity_hours_month||140}h</td><td class="tg" style="font-size:11px">${m.email||'—'}</td>
+    <td class="tg" style="font-size:10px;font-family:monospace">${m.monday_user_id||'—'}</td>
+    <td style="white-space:nowrap"><button class="bsm" onclick="editMember('${m.id}')" style="padding:4px 8px;font-size:11px">✎</button>
+    <button class="bsm" onclick="confirmDelMember(this)" data-id="${m.id}" data-name="${m.name.replace(/"/g,'')}" style="padding:4px 8px;font-size:11px;color:var(--gray2);margin-left:3px">✕</button></td></tr>`;}).join('')}</tbody></table></div>`;
 }
 
+// ADMIN: CLIENTS
 async function pgAdmClients(el){
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${clients.length} clientes</span><button class="bsmr" onclick="openNewClient()">+ Novo</button></div>
-    <div class="tw"><table>
-      <thead><tr><th>Cliente</th><th>Time</th><th>Meta Mensal</th><th>Projetos</th><th></th></tr></thead>
-      <tbody>${clients.map(c=>{
-        const cprojs=projects.filter(p=>p.client_id===c.id);
-        return `<tr>
-          <td style="font-weight:600">${c.name}</td>
-          <td><span class="badge">${c.team||'—'}</span></td>
-          <td class="tg">${c.target_hours_month?fmtH(c.target_hours_month):'—'}</td>
-          <td class="tg">${cprojs.length} projetos</td>
-          <td><button class="bsm" onclick="editClient('${c.id}')" style="padding:4px 8px;font-size:11px">✎</button></td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+  el.innerHTML=`<div class="sh"><span class="stitle">${clients.length} clientes</span><button class="bsmr" onclick="openNewClient()">+ Novo</button></div>
+    <div class="tw"><table><thead><tr><th>Cliente</th><th>Time</th><th>Meta Mensal</th><th>Projetos</th><th></th></tr></thead>
+    <tbody>${clients.map(c=>{const cp=projects.filter(p=>p.client_id===c.id);return `<tr><td style="font-weight:600">${c.name}</td><td>${teamBadge(c.team)}</td>
+    <td class="tg">${c.target_hours_month?fmtH(c.target_hours_month):'—'}</td><td class="tg">${cp.length}</td>
+    <td><button class="bsm" onclick="editClient('${c.id}')" style="padding:4px 8px;font-size:11px">✎</button></td></tr>`;}).join('')}</tbody></table></div>`;
 }
 
+// ADMIN: PROJECTS
 async function pgAdmProjects(el){
-  const byClient={};
-  clients.forEach(c=>byClient[c.id]={name:c.name,projs:[]});
+  const byClient={};clients.forEach(c=>byClient[c.id]={name:c.name,projs:[]});
   projects.forEach(p=>{if(byClient[p.client_id])byClient[p.client_id].projs.push(p);});
-  el.innerHTML=`
-    <div class="sh"><span class="stitle">${projects.length} projetos</span><button class="bsmr" onclick="openNewProject()">+ Novo Projeto</button></div>
-    <div class="rgrid">
-      ${Object.values(byClient).filter(c=>c.projs.length>0).map(c=>`
-        <div class="rc">
-          <div class="rct">${c.name}</div>
-          ${c.projs.map(p=>`
-            <div class="rrow" style="justify-content:space-between">
-              <span style="font-size:13px;font-weight:500">${p.name}</span>
-              <button class="bsm" onclick="delProject('${p.id}')" style="padding:3px 7px;font-size:11px;color:var(--gray2)">✕</button>
-            </div>`).join('')}
-        </div>`).join('')}
-      ${Object.values(byClient).filter(c=>c.projs.length===0).length>0?`
-        <div class="rc">
-          <div class="rct" style="color:var(--gray2)">Clientes sem projetos</div>
-          ${Object.values(byClient).filter(c=>c.projs.length===0).map(c=>`<div class="rrow"><span class="tg" style="font-size:12px">${c.name}</span></div>`).join('')}
-        </div>`:''}
-    </div>`;
+  el.innerHTML=`<div class="sh"><span class="stitle">${projects.length} projetos</span><button class="bsmr" onclick="openNewProject()">+ Novo</button></div>
+    <div class="rgrid">${Object.values(byClient).filter(c=>c.projs.length>0).map(c=>`<div class="rc"><div class="rct">${c.name}</div>
+    ${c.projs.map(p=>`<div class="rrow" style="justify-content:space-between"><span style="font-size:13px;font-weight:500">${p.name}</span>
+    <button class="bsm" onclick="delProject('${p.id}')" style="padding:3px 7px;font-size:11px;color:var(--gray2)">✕</button></div>`).join('')}</div>`).join('')}</div>`;
 }
 
+// ADMIN: ACCOUNTS
 async function pgAdmAccounts(el){
   const accounts=members.filter(m=>m.access_level==='account');
   if(!accounts.length){el.innerHTML='<div class="empty">Nenhum usuário com nível "Account" cadastrado.</div>';return;}
-
-  // Load all associations
-  const [allAM,allAC]=await Promise.all([
-    req('GET','tt_account_members?select=*',null,tok()),
-    req('GET','tt_account_clients?select=*',null,tok())
-  ]);
-
-  el.innerHTML=`
-    <p class="section-info">Configure quais <strong>pessoas</strong> e <strong>clientes</strong> cada Account consegue visualizar e gerenciar.</p>
-    <div class="rgrid">
-      ${accounts.map(acc=>{
-        const amids=(allAM||[]).filter(x=>x.account_id===acc.id).map(x=>x.member_id);
-        const acids=(allAC||[]).filter(x=>x.account_id===acc.id).map(x=>x.client_id);
-        const amNames=members.filter(m=>amids.includes(m.id)).map(m=>m.name.split(' ')[0]);
-        const acNames=clients.filter(c=>acids.includes(c.id)).map(c=>c.name);
-        return `<div class="rc">
-          <div class="rct" style="font-size:12px">${acc.name} <span class="role-badge rb-account">Account</span></div>
-          <div style="margin-bottom:12px">
-            <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pessoas (${amids.length})</div>
-            <div class="assoc-list">
-              ${amNames.length?amNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('member','${acc.id}','${amids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhuma</span>'}
-            </div>
-            <div style="margin-top:8px;display:flex;gap:6px">
-              <select class="fsel" id="add-mb-${acc.id}" style="flex:1;font-size:11px">
-                <option value="">+ Adicionar pessoa</option>
-                ${members.filter(m=>!amids.includes(m.id)&&m.id!==acc.id).map(m=>`<option value="${m.id}">${m.name.split(' ').slice(0,2).join(' ')}</option>`).join('')}
-              </select>
-              <button class="bsmg" onclick="addAssoc('member','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button>
-            </div>
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Clientes (${acids.length})</div>
-            <div class="assoc-list">
-              ${acNames.length?acNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('client','${acc.id}','${acids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhum</span>'}
-            </div>
-            <div style="margin-top:8px;display:flex;gap:6px">
-              <select class="fsel" id="add-cl-${acc.id}" style="flex:1;font-size:11px">
-                <option value="">+ Adicionar cliente</option>
-                ${clients.filter(c=>!acids.includes(c.id)).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-              </select>
-              <button class="bsmg" onclick="addAssoc('client','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
+  const[allAM,allAC]=await Promise.all([req('GET','tt_account_members?select=*',null,tok()),req('GET','tt_account_clients?select=*',null,tok())]);
+  el.innerHTML=`<p class="section-info">Configure quais <strong>pessoas</strong> e <strong>clientes</strong> cada Account pode visualizar.</p>
+    <div class="rgrid">${accounts.map(acc=>{
+      const amids=(allAM||[]).filter(x=>x.account_id===acc.id).map(x=>x.member_id);
+      const acids=(allAC||[]).filter(x=>x.account_id===acc.id).map(x=>x.client_id);
+      const amNames=members.filter(m=>amids.includes(m.id)).map(m=>m.name.split(' ')[0]);
+      const acNames=clients.filter(c=>acids.includes(c.id)).map(c=>c.name);
+      return `<div class="rc"><div class="rct">${acc.name} <span class="role-badge rb-account">Account</span></div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pessoas (${amids.length})</div>
+          <div class="assoc-list">${amNames.length?amNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('member','${acc.id}','${amids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhuma</span>'}</div>
+          <div style="margin-top:8px;display:flex;gap:6px"><select class="fsel" id="add-mb-${acc.id}" style="flex:1;font-size:11px"><option value="">+ Pessoa</option>${members.filter(m=>!amids.includes(m.id)&&m.id!==acc.id).map(m=>`<option value="${m.id}">${m.name.split(' ').slice(0,2).join(' ')}</option>`).join('')}</select><button class="bsmg" onclick="addAssoc('member','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Clientes (${acids.length})</div>
+          <div class="assoc-list">${acNames.length?acNames.map((n,i)=>`<div class="assoc-tag">${n}<button onclick="removeAssoc('client','${acc.id}','${acids[i]}')">×</button></div>`).join(''):'<span style="font-size:12px;color:var(--gray2)">Nenhum</span>'}</div>
+          <div style="margin-top:8px;display:flex;gap:6px"><select class="fsel" id="add-cl-${acc.id}" style="flex:1;font-size:11px"><option value="">+ Cliente</option>${clients.filter(c=>!acids.includes(c.id)).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select><button class="bsmg" onclick="addAssoc('client','${acc.id}')" style="padding:5px 10px;font-size:11px">+</button></div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
 }
-
-async function addAssoc(type,accountId){
-  const selId=type==='member'?`add-mb-${accountId}`:`add-cl-${accountId}`;
-  const sel=document.getElementById(selId);
-  if(!sel||!sel.value)return;
-  const val=sel.value;
-  try{
-    if(type==='member')await req('POST','tt_account_members',{account_id:accountId,member_id:val},tok());
-    else await req('POST','tt_account_clients',{account_id:accountId,client_id:val},tok());
-    toast('Associação adicionada','success');
-    await renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-
-async function removeAssoc(type,accountId,itemId){
-  try{
-    if(type==='member')await req('DELETE',`tt_account_members?account_id=eq.${accountId}&member_id=eq.${itemId}`,null,tok());
-    else await req('DELETE',`tt_account_clients?account_id=eq.${accountId}&client_id=eq.${itemId}`,null,tok());
-    toast('Removido','success');
-    await renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
+async function addAssoc(type,accId){const sel=document.getElementById(type==='member'?`add-mb-${accId}`:`add-cl-${accId}`);if(!sel?.value)return;try{await req('POST',type==='member'?'tt_account_members':'tt_account_clients',type==='member'?{account_id:accId,member_id:sel.value}:{account_id:accId,client_id:sel.value},tok());toast('Adicionado','success');renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}}
+async function removeAssoc(type,accId,itemId){try{await req('DELETE',`${type==='member'?'tt_account_members':'tt_account_clients'}?account_id=eq.${accId}&${type==='member'?'member_id':'client_id'}=eq.${itemId}`,null,tok());toast('Removido','success');renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}}
 
 // ENTRY MODAL
 function openNewEntry(){
-  editId=null;
-  document.getElementById('m-entry-t').textContent='Novo Lançamento';
-  document.getElementById('e-desc').value='';
-  document.getElementById('e-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('e-hours').value='';
+  editId=null;document.getElementById('m-entry-t').textContent='Novo Lançamento';
+  document.getElementById('e-desc').value='';document.getElementById('e-date').value=new Date().toISOString().split('T')[0];document.getElementById('e-hours').value='';
   const mc=myClients(),mm=myMembers();
   document.getElementById('e-client').innerHTML='<option value="">Selecionar</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   document.getElementById('e-project').innerHTML='<option value="">Sem projeto</option>';
   const mw=document.getElementById('e-member-wrap');
-  if(me?.access_level==='user'){mw.style.display='none';}
-  else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');if(me)document.getElementById('e-member').value=me.id;}
+  if(me?.access_level==='user'){mw.style.display='none';}else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');if(me)document.getElementById('e-member').value=me.id;}
   openM('m-entry');
 }
-
 function editEntry(id){
-  const e=allEntries.find(x=>x.id===id)||(curPage==='timer'?null:null);
-  if(!e)return;
-  editId=id;
-  document.getElementById('m-entry-t').textContent='Editar Lançamento';
-  document.getElementById('e-desc').value=e.description||'';
-  document.getElementById('e-date').value=e.date||'';
-  document.getElementById('e-hours').value=e.hours||'';
+  const e=allEntries.find(x=>x.id===id);if(!e)return;editId=id;
+  document.getElementById('m-entry-t').textContent='Editar';document.getElementById('e-desc').value=e.description||'';document.getElementById('e-date').value=e.date||'';document.getElementById('e-hours').value=e.hours||'';
   const mc=myClients(),mm=myMembers();
-  document.getElementById('e-client').innerHTML='<option value="">Selecionar</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('e-client').value=e.client_id||'';
-  loadProjectsForEntry();
-  setTimeout(()=>{document.getElementById('e-project').value=e.project_id||'';},100);
+  document.getElementById('e-client').innerHTML='<option value="">Selecionar</option>'+mc.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');document.getElementById('e-client').value=e.client_id||'';
+  loadProjectsForEntry();setTimeout(()=>{document.getElementById('e-project').value=e.project_id||'';},100);
   const mw=document.getElementById('e-member-wrap');
-  if(me?.access_level==='user'){mw.style.display='none';}
-  else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');document.getElementById('e-member').value=e.member_id||'';}
+  if(me?.access_level==='user'){mw.style.display='none';}else{mw.style.display='';document.getElementById('e-member').innerHTML='<option value="">Selecionar</option>'+mm.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');document.getElementById('e-member').value=e.member_id||'';}
   openM('m-entry');
 }
-
-function loadProjectsForEntry(){
-  const cid=document.getElementById('e-client')?.value;
-  const ps=document.getElementById('e-project');if(!ps)return;
-  const projs=myProjects(cid);
-  ps.innerHTML='<option value="">Sem projeto</option>'+projs.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-}
-
+function loadProjectsForEntry(){const cid=document.getElementById('e-client')?.value;const ps=document.getElementById('e-project');if(!ps)return;ps.innerHTML='<option value="">Sem projeto</option>'+myProjects(cid).map(p=>`<option value="${p.id}">${p.name}</option>`).join('');}
 async function saveEntry(){
-  const btn=document.getElementById('e-save');
-  const memberId=me?.access_level==='user'?me.id:document.getElementById('e-member').value;
-  const p={
-    description:document.getElementById('e-desc').value.trim(),
-    date:document.getElementById('e-date').value,
-    hours:parseFloat(document.getElementById('e-hours').value),
-    client_id:document.getElementById('e-client').value,
-    project_id:document.getElementById('e-project').value||null,
-    member_id:memberId
-  };
-  if(!p.description||!p.date||!p.hours||!p.client_id||!p.member_id){toast('Preencha todos os campos obrigatórios','error');return;}
+  const btn=document.getElementById('e-save');const mid=me?.access_level==='user'?me.id:document.getElementById('e-member').value;
+  const p={description:document.getElementById('e-desc').value.trim(),date:document.getElementById('e-date').value,hours:parseFloat(document.getElementById('e-hours').value),client_id:document.getElementById('e-client').value,project_id:document.getElementById('e-project').value||null,member_id:mid,is_manual:true,is_running:false};
+  if(!p.description||!p.date||!p.hours||!p.client_id||!p.member_id){toast('Preencha todos os campos','error');return;}
+  p.duration_minutes=Math.round(p.hours*60*100)/100;
   btn.disabled=true;btn.textContent='Salvando...';
-  try{
-    if(editId)await req('PATCH',`tt_time_entries?id=eq.${editId}`,p,tok());
-    else await req('POST','tt_time_entries',p,tok());
-    toast(editId?'Atualizado':'Salvo','success');closeM('m-entry');
-    if(curPage==='entries')await loadETable();else loadToday();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+  try{if(editId)await req('PATCH',`tt_time_entries?id=eq.${editId}`,p,tok());else await req('POST','tt_time_entries',p,tok());
+  toast(editId?'Atualizado':'Salvo','success');closeM('m-entry');renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}
   finally{btn.disabled=false;btn.textContent='Salvar';}
 }
-
 async function delEntry(id){
-  if(!confirm(`Excluir "${(allEntries.find(x=>x.id===id)?.description||'este lançamento').substring(0,40)}"?`))return;
-  try{
-    await req('DELETE',`tt_time_entries?id=eq.${id}`,null,tok());
-    allEntries=allEntries.filter(e=>e.id!==id);
-    toast('Removido','success');
-    if(curPage==='entries')await loadETable();else loadToday();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+  const e=allEntries.find(x=>x.id===id);
+  if(!confirm(`Excluir "${(e?.description||'lançamento').substring(0,40)}"?`))return;
+  try{await req('DELETE',`tt_time_entries?id=eq.${id}`,null,tok());allEntries=allEntries.filter(e=>e.id!==id);toast('Removido','success');renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}
 }
 
 // MEMBER MODAL
 let editMemberId=null;
-function openNewMember(){
-  editMemberId=null;
-  document.getElementById('m-member-t').textContent='Nova Pessoa';
-  document.getElementById('mb-name').value='';
-  document.getElementById('mb-email').value='';
-  document.getElementById('mb-role-inp').value='';
-  document.getElementById('mb-team').value='T1';
-  document.getElementById('mb-access').value='user';
-  document.getElementById('mb-cap').value='140';
-  document.getElementById('mb-monday').value='';
-  document.getElementById('mb-pass').value='';
-  document.getElementById('mb-monday').value=document.getElementById('mb-monday')?.value||'';
-  openM('m-member');
-}
-function editMember(id){
-  editMemberId=id;
-  const m=members.find(x=>x.id===id);if(!m)return;
-  document.getElementById('m-member-t').textContent='Editar Pessoa';
-  document.getElementById('mb-name').value=m.name||'';
-  document.getElementById('mb-email').value=m.email||'';
-  document.getElementById('mb-role-inp').value=m.job_title||m.role||'';
-  document.getElementById('mb-team').value=(m.team==='Pack'?'PACK':m.team)||'T1';
-  document.getElementById('mb-access').value=m.access_level||'user';
-  document.getElementById('mb-cap').value=m.capacity_hours_month||140;
-  document.getElementById('mb-monday').value=m.monday_user_id||'';
-  document.getElementById('mb-pass').value='';
-  openM('m-member');
-}
+function openNewMember(){editMemberId=null;document.getElementById('m-member-t').textContent='Nova Pessoa';document.getElementById('mb-name').value='';document.getElementById('mb-email').value='';document.getElementById('mb-role-inp').value='';document.getElementById('mb-team').value='T1';document.getElementById('mb-access').value='user';document.getElementById('mb-cap').value='140';document.getElementById('mb-monday').value='';document.getElementById('mb-pass').value='';openM('m-member');}
+function editMember(id){editMemberId=id;const m=members.find(x=>x.id===id);if(!m)return;document.getElementById('m-member-t').textContent='Editar';document.getElementById('mb-name').value=m.name||'';document.getElementById('mb-email').value=m.email||'';document.getElementById('mb-role-inp').value=m.job_title||'';document.getElementById('mb-team').value=(m.team==='Pack'?'PACK':m.team)||'T1';document.getElementById('mb-access').value=m.access_level||'user';document.getElementById('mb-cap').value=m.capacity_hours_month||140;document.getElementById('mb-monday').value=m.monday_user_id||'';document.getElementById('mb-pass').value='';openM('m-member');}
 async function saveMember(){
-  const name=document.getElementById('mb-name').value.trim();
-  const email=document.getElementById('mb-email').value.trim();
-  const job_title=document.getElementById('mb-role-inp').value.trim();
-  const team=document.getElementById('mb-team').value;
-  const access_level=document.getElementById('mb-access').value;
-  const capacity_hours_month=parseInt(document.getElementById('mb-cap').value)||140;
+  const name=document.getElementById('mb-name').value.trim(),email=document.getElementById('mb-email').value.trim(),job_title=document.getElementById('mb-role-inp').value.trim(),team=document.getElementById('mb-team').value,access_level=document.getElementById('mb-access').value,capacity_hours_month=parseInt(document.getElementById('mb-cap').value)||140,monday_user_id=document.getElementById('mb-monday').value.trim()||null;
   if(!name){toast('Nome obrigatório','error');return;}
   const btn=document.getElementById('mb-save');btn.disabled=true;btn.textContent='Salvando...';
   try{
-    if(editMemberId){
-      // On edit: update all fields except email
-      const monday_user_id=document.getElementById('mb-monday').value.trim()||null;
-      const p={name,job_title,team,access_level,capacity_hours_month,monday_user_id};
-      await req('PATCH',`tt_members?id=eq.${editMemberId}`,p,tok());
-    }else{
-      const monday_user_id=document.getElementById('mb-monday').value.trim()||null;
-      const p={name,email,job_title,team,access_level,capacity_hours_month,monday_user_id};
-      await req('POST','tt_members',p,tok());
-    }
+    if(editMemberId){await req('PATCH',`tt_members?id=eq.${editMemberId}`,{name,job_title,team,access_level,capacity_hours_month,monday_user_id},tok());}
+    else{await req('POST','tt_members',{name,email,job_title,team,access_level,capacity_hours_month,monday_user_id},tok());}
     toast(editMemberId?'Atualizado':'Adicionado','success');closeM('m-member');await loadAll();buildNav();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-  finally{btn.disabled=false;btn.textContent='Salvar';}
+  }catch(ex){toast('Erro: '+ex.message,'error');}finally{btn.disabled=false;btn.textContent='Salvar';}
 }
+async function confirmDelMember(btn){const id=btn.dataset.id,name=btn.dataset.name;if(!confirm('Remover '+name+'?'))return;try{await req('DELETE',`tt_members?id=eq.${id}`,null,tok());toast('Removido','success');await loadAll();buildNav();renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}}
 
 // CLIENT MODAL
 let editClientId=null;
-function openNewClient(){
-  editClientId=null;
-  document.getElementById('m-client-t').textContent='Novo Cliente';
-  document.getElementById('cl-name').value='';
-  document.getElementById('cl-team').value='T1';
-  document.getElementById('cl-target').value='';
-  openM('m-client');
-}
-function editClient(id){
-  editClientId=id;
-  const c=clients.find(x=>x.id===id);if(!c)return;
-  document.getElementById('m-client-t').textContent='Editar Cliente';
-  document.getElementById('cl-name').value=c.name||'';
-  document.getElementById('cl-team').value=c.team||'T1';
-  document.getElementById('cl-target').value=c.target_hours_month||'';
-  openM('m-client');
-}
+function openNewClient(){editClientId=null;document.getElementById('m-client-t').textContent='Novo Cliente';document.getElementById('cl-name').value='';document.getElementById('cl-team').value='T1';document.getElementById('cl-target').value='';openM('m-client');}
+function editClient(id){editClientId=id;const c=clients.find(x=>x.id===id);if(!c)return;document.getElementById('m-client-t').textContent='Editar';document.getElementById('cl-name').value=c.name||'';document.getElementById('cl-team').value=c.team||'T1';document.getElementById('cl-target').value=c.target_hours_month||'';openM('m-client');}
 async function saveClient(){
   const p={name:document.getElementById('cl-name').value.trim(),team:document.getElementById('cl-team').value,target_hours_month:parseInt(document.getElementById('cl-target').value)||null};
   if(!p.name){toast('Nome obrigatório','error');return;}
-  try{
-    if(editClientId)await req('PATCH',`tt_clients?id=eq.${editClientId}`,p,tok());
-    else await req('POST','tt_clients',p,tok());
-    toast(editClientId?'Atualizado':'Adicionado','success');closeM('m-client');await loadAll();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+  try{if(editClientId)await req('PATCH',`tt_clients?id=eq.${editClientId}`,p,tok());else await req('POST','tt_clients',p,tok());
+  toast(editClientId?'Atualizado':'Adicionado','success');closeM('m-client');await loadAll();renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}
 }
 
 // PROJECT MODAL
-function openNewProject(){
-  document.getElementById('pr-name').value='';
-  document.getElementById('pr-desc').value='';
-  document.getElementById('pr-client').innerHTML='<option value="">Selecionar</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  openM('m-project');
-}
+function openNewProject(){document.getElementById('pr-name').value='';document.getElementById('pr-desc').value='';document.getElementById('pr-client').innerHTML='<option value="">Selecionar</option>'+clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');openM('m-project');}
 async function saveProject(){
   const p={name:document.getElementById('pr-name').value.trim(),client_id:document.getElementById('pr-client').value,description:document.getElementById('pr-desc').value.trim()||null};
   if(!p.name||!p.client_id){toast('Nome e cliente obrigatórios','error');return;}
-  try{
-    await req('POST','tt_projects',p,tok());
-    toast('Projeto adicionado','success');closeM('m-project');await loadAll();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
+  try{await req('POST','tt_projects',p,tok());toast('Adicionado','success');closeM('m-project');await loadAll();renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}
 }
-async function delProject(id){
-  if(!confirm('Excluir este projeto?'))return;
-  try{await req('DELETE',`tt_projects?id=eq.${id}`,null,tok());toast('Removido','success');await loadAll();renderPage();}
-  catch(ex){toast('Erro: '+ex.message,'error');}
-}
+async function delProject(id){if(!confirm('Excluir este projeto?'))return;try{await req('DELETE',`tt_projects?id=eq.${id}`,null,tok());toast('Removido','success');await loadAll();renderPage();}catch(ex){toast('Erro: '+ex.message,'error');}}
 
 // EXPORT
 function exportCsv(){
   if(!allEntries.length){toast('Sem dados','error');return;}
-  const rows=[['Data','Descrição','Cliente','Projeto','Pessoa','Horas']];
-  allEntries.forEach(e=>rows.push([e.date,e.description||'',e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'',e.project?.name||projects.find(p=>p.id==e.project_id)?.name||'',e.member?.name||members.find(m=>m.id==e.member_id)?.name||'',(e.hours||0).toString().replace('.',',')]));
+  const rows=[['Data','Descrição','Cliente','Projeto','Pessoa','Time','Horas']];
+  allEntries.forEach(e=>rows.push([e.date,e.description||'',e.client?.name||clients.find(c=>c.id==e.client_id)?.name||'',e.project?.name||projects.find(p=>p.id==e.project_id)?.name||'',e.member?.name||members.find(m=>m.id==e.member_id)?.name||'',e.member?.team||'',String(e.hours||0).replace('.',',')]));
   const csv=rows.map(r=>r.map(v=>`"${v}"`).join(';')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
-  a.download=`tgt-time-${fMonth}.csv`;a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`tgt-time-${getDateRange().from}_${getDateRange().to}.csv`;a.click();
 }
 
 // HELPERS
@@ -1204,53 +952,20 @@ function openM(id){document.getElementById(id).classList.add('open');}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 function fmtH(h){if(!h||h===0)return'0h';const n=Math.round(h*100)/100;if(n>=1)return n.toFixed(1)+'h';const m=Math.round(n*60);return m+'min';}
 function fmtD(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}`;}
-function buildMoOpts(){const months=[];const now=new Date();for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const val=d.toISOString().slice(0,7);const label=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});months.push(`<option value="${val}"${val===fMonth?' selected':''}>${label}</option>`);}return months.join('');}
+function fmtDate(d){if(!d)return'—';try{const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});}catch{return d;}}
 function toggleSb(){document.getElementById('sb').classList.toggle('open');}
 function toast(msg,type='success'){const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span> ${msg}`;document.getElementById('toastc').appendChild(el);setTimeout(()=>el.remove(),3500);}
 
 if(window.innerWidth<=768)document.getElementById('mbtn').style.display='flex';
 window.addEventListener('resize',()=>{const b=document.getElementById('mbtn');if(b)b.style.display=window.innerWidth<=768?'flex':'none';});
 
-
-async function confirmDelMember(btn){
-  const id=btn.dataset.id, name=btn.dataset.name;
-  if(!confirm('Remover ' + name + '?'))return;
-  try{
-    await req('DELETE',`tt_members?id=eq.${id}`,null,tok());
-    toast('Removido','success');await loadAll();buildNav();renderPage();
-  }catch(ex){toast('Erro: '+ex.message,'error');}
-}
-// INIT
-async function refreshSession(s){
-  try{
-    const r=await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':KEY},
-      body:JSON.stringify({refresh_token:s.refresh_token})
-    });
-    if(r.ok){
-      const ns=await r.json();
-      localStorage.setItem('tgt_sess',JSON.stringify(ns));
-      return ns;
-    }
-  }catch{}
-  return null;
-}
+// SESSION RESTORE
+async function refreshSession(s){try{const r=await fetch(`${SB}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({refresh_token:s.refresh_token})});if(r.ok){const ns=await r.json();localStorage.setItem('tgt_sess',JSON.stringify(ns));return ns;}}catch{}return null;}
 
 (async()=>{
   const sv=localStorage.getItem('tgt_sess');
-  if(sv){
-    try{
-      const s=JSON.parse(sv);
-      // Try current token first
-      const r=await fetch(`${SB}/auth/v1/user`,{headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});
-      if(r.ok){sess=s;await boot();return;}
-      // Token expired — try refresh
-      const ns=await refreshSession(s);
-      if(ns){sess=ns;await boot();return;}
-    }catch{}
-    localStorage.removeItem('tgt_sess');
-  }
+  if(sv){try{const s=JSON.parse(sv);const r=await fetch(`${SB}/auth/v1/user`,{headers:{apikey:KEY,Authorization:`Bearer ${s.access_token}`}});
+  if(r.ok){sess=s;await boot();return;}const ns=await refreshSession(s);if(ns){sess=ns;await boot();return;}}catch{}localStorage.removeItem('tgt_sess');}
   document.getElementById('auth').style.display='flex';
 })();
 </script>
