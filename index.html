@@ -232,12 +232,12 @@ async function api(method, path, body, token) {
 }
 
 async function login(email, pw) {
-  const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
-    method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY},
-    body: JSON.stringify({email,password:pw})
-  });
-  if(!r.ok) throw new Error('E-mail ou senha incorretos');
-  return r.json();
+  // Simple login via tt_members table (no Supabase Auth dependency)
+  const members = await api('GET',`tt_members?email=eq.${encodeURIComponent(email)}&or=(is_active.eq.true,active.eq.true)&select=*`);
+  if(!members || members.length === 0) throw new Error('E-mail não encontrado');
+  const member = members[0];
+  if(member.login_password !== pw) throw new Error('Senha incorreta');
+  return { user: { id: member.id, email: member.email }, member: member };
 }
 
 function toast(msg, type='info') {
@@ -250,7 +250,7 @@ function toast(msg, type='info') {
 
 // ─── Data loading ───
 async function loadAll() {
-  const t = S.token || SB_KEY;
+  const t = SB_KEY;
   const [members, clients, projects] = await Promise.all([
     api('GET','tt_members?or=(is_active.eq.true,active.eq.true)&order=team,name',null,t),
     api('GET','tt_clients?or=(is_active.eq.true,active.eq.true)&order=team,name',null,t),
@@ -262,7 +262,7 @@ async function loadAll() {
 }
 
 async function loadEntries(monthYear) {
-  const t = S.token || SB_KEY;
+  const t = SB_KEY;
   const startDate = `${monthYear}-01`;
   const y = parseInt(monthYear.split('-')[0]);
   const m = parseInt(monthYear.split('-')[1]);
@@ -272,7 +272,7 @@ async function loadEntries(monthYear) {
 }
 
 async function loadRunningEntries() {
-  const t = S.token || SB_KEY;
+  const t = SB_KEY;
   const running = await api('GET','tt_time_entries?is_running=eq.true',null,t);
   return running||[];
 }
@@ -1316,7 +1316,7 @@ function renderLogin() {
 }
 
 async function doLogin() {
-  const email = document.getElementById('loginEmail').value;
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
   const pw = document.getElementById('loginPw').value;
   const errEl = document.getElementById('loginError');
   if(!email||!pw){errEl.textContent='Preencha e-mail e senha';return;}
@@ -1325,16 +1325,14 @@ async function doLogin() {
     errEl.textContent = 'Entrando...';
     const auth = await login(email, pw);
     S.user = auth.user;
-    S.token = auth.access_token;
+    S.token = SB_KEY; // Use anon key for all API calls
+    S.currentMember = auth.member;
     
     await loadAll();
     
-    // Find current member by auth_id or email
-    S.currentMember = S.members.find(m=>m.auth_id===S.user.id) || S.members.find(m=>m.email===email);
-    if(!S.currentMember) {
-      // If not found, create a basic admin entry for the CEO
-      S.currentMember = {id:'50c81182-b238-4c4c-8ec0-4dd4174e9325',name:'Joao Butuem',team:'ADM',job_title:'Diretor / CEO',access_level:'admin',capacity_hours_month:140};
-    }
+    // Re-match from loaded members to ensure fresh data
+    const fresh = S.members.find(m=>m.id===S.currentMember.id);
+    if(fresh) S.currentMember = fresh;
     
     S.page = 'timer';
     render();
